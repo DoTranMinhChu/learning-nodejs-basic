@@ -656,7 +656,116 @@ NODEJS FOR BEGINNERS
                 console.log(`Example app listening on port http://localhost:${port}/`)
             })
 
+* Run app
+    * In the file [package.json], adding line "start": "nodemon index.js" into "scripts" 
 
+            .
+            ..
+            .
+            "scripts": {
+                "test": "echo \"Error: no test specified\" && exit 1",
+                "start": "nodemon index.js"
+            },
+            .
+            .
+            ..
+            ...
+            .
+            .
+
+
+    * Run app with command
+
+            nodemon 
+
+    Or 
+
+            npm start
 
 ====================================================================
-# VI. ExpressJS https://expressjs.com/
+# VII. Router in ExpressJS (https://expressjs.com/en/guide/routing.html#express-router)
+
+* Create new files [apiRouter.js]
+* Example code :
+    * Write the following code into the file [apiRouter.js]
+
+            const express = require('express');
+            const router = express.Router();
+
+            router.use((req, res, next) => {
+                res.writeHead(200, { 'Content-Type': 'text/html' })
+                res.write('<a href="/api/v1/about">/api/v1/about</a> </br>')
+                res.write('<a href="/api/v1/cart">/api/v1/cart</a></br>')
+                res.write('<a href="/api/v1/cart/abcxyz">/api/v1/cart/abcxyz</a></br>')
+                res.write('<a href="/api/v1/cart/a1b2c3">/api/v1/cart/a1b2c3</a></br>')
+                res.write('<a href="/api/v1/">/api/v1/</a></br>')
+                res.write(`</br>Time: ${Date.now()} </br>`);
+                next();
+            })
+
+
+            router.get('/about', (req, res) => {
+                res.write('This is "About" page</br>');
+                res.send();
+            })
+
+            router.get('/cart', (req, res) => {
+                res.write('Welcome</br>');
+                res.write('This is "cart" page');
+                res.send();
+            })
+            router.get('/cart/:id', (req, res) => {
+                res.write(`This is "cart" page , with parameter id : ${req.params.id}`)
+                res.send();
+            })
+
+
+            router.get('/', (req, res) => {
+                res.write('This is "Home" page')
+                res.send();
+            })
+
+
+            module.exports = {
+                router
+            } 
+
+
+    * Write the following code into the file [index.js]
+
+            const express = require('express');
+            const app = express();
+            const port = 3000;
+            const { router } = require('./apiRouter');
+
+            app.use("/api/v1", router);
+            app.listen(port, () => {
+                console.log(`Example app http://localhost:${port}/api/v1`)
+            })
+        
+* Explain code:
+    * In the file [apiRouter.js]
+        *  Middleware that is specific to this router
+
+                router.use((req, res, next) => {
+                    res.writeHead(200, { 'Content-Type': 'text/html' })
+                    ...
+                    ..
+                    res.write('<a href="/api/v1/">/api/v1/</a></br>')
+                    res.write(`</br>Time: ${Date.now()} </br>`);
+                    next();
+                })
+
+        > If the current middleware function does not end the request-response cycle, it must call **next()** to pass control to the next middleware function. Otherwise, the request will be left hanging.
+        > Middleware : https://expressjs.com/en/guide/writing-middleware.html
+
+    * In the file [index.js]
+
+            const { router } = require('./apiRouter');
+            .
+            .
+            .
+            app.use("/api/v1", router);
+
+        * The app will now be able to handle requests to /api/v1/ and /api/v1/about and /api/v1/cart and ....
+        * As well as call the timeLog middleware function that is specific to the route.
