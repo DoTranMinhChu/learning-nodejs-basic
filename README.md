@@ -402,3 +402,225 @@ NODEJS FOR BEGINNERS
             fs.readFile(path[, options], callback)
             
     * The callback is passed two arguments (err, data), where data is the contents of the file.
+
+
+
+====================================================================
+# VI. Routing basic with NodeJS
+
+* Write the following code into the file [app.js]
+
+        const http = require('http');
+        const { readFile } = require('fs')
+        const url = require('url')
+
+        const myModule = require('./MModules/module');
+        const config = require('./MModules/config')
+
+        const hostname = config.hostname;
+        const port = config.port;
+
+        function onRequest(req, res) {
+            console.log(">> check req.url : ", req.url);
+            console.log(">> check url.parse(req.url) : ", url.parse(req.url,true));
+            readFile('./page/home/homepage.html', (err, data) => {
+                    if (err) throw err;
+                    res.write(data);
+                    res.end('End page');
+            })
+        }
+        const server = http.createServer(onRequest);
+
+        server.listen(port, hostname, () => {
+            myModule.notifiRunServer(hostname, port);
+            myModule.notifiRunServer('localhost', port);
+        });
+
+* Run code and try
+
+    http://127.0.0.1:3000/
+    
+    http://127.0.0.1:3000/abc
+
+    http://127.0.0.1:3000/abc/xyz
+
+
+    http://127.0.0.1:3000/abc/xyz?foo=bad&baz=foo 
+
+
+
+* Parse an address with the url.parse() method, and it will return a URL object with each part of the address as properties
+* Ref url.parse() : https://nodejs.org/api/url.html#urlparseurlstring-parsequerystring-slashesdenotehost
+* Ref query parameters : https://nodejs.org/en/knowledge/HTTP/clients/how-to-access-query-string-parameters/
+
+
+* Writing simple routing with NodeJS
+
+    * Create files and folders as follows:
+
+
+            │   app.js
+            │   README.md
+            │
+            ├───MModules
+            │       config.js
+            │       hepler.js
+            │       module.js
+            │
+            └───page
+                ├───about
+                │       index.html
+                │
+                ├───error
+                │       index.html
+                │
+                └───home
+                        index.html
+
+    * Write the following code into the file [page>about>index.html]
+
+                <!DOCTYPE html>
+                <html lang="en">
+
+                <head>
+                    <meta charset="UTF-8">
+                    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>About</title>
+                </head>
+
+                <body>
+                    <h1 style="color : red">Hello World</h1>
+                    <h2 style="color : rgb(0, 255, 38)">About Page</h2>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis laborum fuga ipsam. Atque voluptatibus
+                            officiis dignissimos, consequuntur ipsa ut vel vitae pariatur repellendus ea ducimus in similique dolor aliquam.
+                            Accusantium.</p>
+                </body>
+
+                </html>
+
+
+    * Write the following code into the file [page>home>index.html]
+
+            <!DOCTYPE html>
+            <html lang="en">
+
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Home</title>
+            </head>
+
+            <body>
+                <h1 style="color : red">Hello World</h1>
+                <h2 style="color : rgb(0, 26, 255)">Home Page</h2>
+            </body>
+
+            </html>
+
+
+    * Write the following code into the file [page>error>index.html]
+
+
+            <!DOCTYPE html>
+            <html lang="en">
+
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Error</title>
+            </head>
+
+            <body>
+                <h1 style="color : red">Hello World</h1>
+                <h2 style="color : rgb(255, 0, 0)">Error Page</h2>
+            </body>
+
+            </html>
+
+    * Write the following code into the file [MModules>hepler.js]
+
+            const fs = require('fs')
+            const url = require('url')
+
+            const renderPage = (pathname, res) => {
+                fs.readFile(pathname, (err, data) => {
+                        if (err) {
+                        res.statusCode = 404;
+                        res.setHeader('Content-Type', 'text/html');
+                        res.write("<h1 style='color : red'>Not found</h1>");
+                        } else {
+                        res.write(data);
+                        }
+
+                        res.end('End page');
+                })
+            }
+
+            const render404 = (pathname, res) => {
+                res.statusCode = 404;
+                renderPage(pathname, res);
+            }
+
+            function onRequest(req, res) {
+                const pathname = url.parse(req.url, true).pathname
+                console.log(">> check url.parse(req.url).pathname : ", pathname);
+                switch (pathname) {
+                        case '/':
+                        case '/home':
+                            renderPage('./page/home/index.html', res)
+                            break;
+                        case '/about':
+                            renderPage('./page/about/index.html', res)
+                            break;
+                        default:
+                            render404('./page/error/index.html', res)
+
+                }
+
+            }
+
+            module.exports = {
+                onRequest: onRequest
+            }
+
+    * Write the following code into the file [MModules>config.js]
+
+            module.exports = {
+                hostname : '127.0.0.1',
+                port : 3000,
+            }
+    
+    * Write the following code into the file [MModules>module.js]
+
+            function notificationRunningServer(hostname, port) {
+                console.log(`Server running at http://${hostname}:${port}/`);
+            }
+
+            module.exports.notifiRunServer = notificationRunningServer
+
+    
+    * Write the following code into the file [app.js]
+
+
+            const http = require('http');
+
+            const hepler = require('./MModules/hepler');
+            const myModule = require('./MModules/module');
+            const config = require('./MModules/config');
+
+
+            const hostname = config.hostname;
+            const port = config.port;
+
+            const server = http.createServer(hepler.onRequest);
+
+            server.listen(port, hostname, () => {
+                myModule.notifiRunServer(hostname, port);
+            });
+
+
+
+* Run code and testing

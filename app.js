@@ -1,22 +1,17 @@
 const http = require('http');
-const { readFile } = require('fs')
 
+const hepler = require('./MModules/hepler');
 const myModule = require('./MModules/module');
-const config = require('./MModules/config')
+const config = require('./MModules/config');
+
 
 const hostname = config.hostname;
 const port = config.port;
 
-const server = http.createServer((req, res) => {
-    readFile('./page/home/homepage.html', (err, data) => {
-        if (err) throw err;
-        res.write(data);
-        res.end('End page');
-    })
-   
-});
+const server = http.createServer(hepler.onRequest);
 
 server.listen(port, hostname, () => {
     myModule.notifiRunServer(hostname, port);
-    myModule.notifiRunServer('localhost', port);
 });
+
+
