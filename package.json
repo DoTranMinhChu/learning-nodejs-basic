@@ -1,0 +1,22 @@
+{
+  "name": "learning-nodejs-basic",
+  "version": "1.0.0",
+  "description": "NODEJS FOR BEGINNERS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DoTranMinhChu/learning-nodejs-basic.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DoTranMinhChu/learning-nodejs-basic/issues"
+  },
+  "homepage": "https://github.com/DoTranMinhChu/learning-nodejs-basic#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}

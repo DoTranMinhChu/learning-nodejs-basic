@@ -328,7 +328,7 @@ NODEJS FOR BEGINNERS
 
 
 ====================================================================
-# V. Output HTML File Nodejs
+# V. Output HTML File using File System with Nodejs 
 
 * Create folders and files following : 
 
@@ -624,3 +624,39 @@ NODEJS FOR BEGINNERS
 
 
 * Run code and testing
+
+
+
+====================================================================
+# VI. ExpressJS https://expressjs.com/
+
+* Note : You can create a new project or delete everything in the old project
+
+* Install ExpressJS (https://expressjs.com/en/starter/installing.html)
+
+        npm init
+
+
+        npm install express
+        
+
+* Hello World Example (https://expressjs.com/en/starter/hello-world.html)
+    * Create file [index.js] and write code into this file :
+
+
+            const express = require('express')
+            const app = express()
+            const port = 3000
+
+            app.get('/', (req, res) => {
+                res.send('Hello World!')
+            })
+
+            app.listen(port, () => {
+                console.log(`Example app listening on port http://localhost:${port}/`)
+            })
+
+
+
+====================================================================
+# VI. ExpressJS https://expressjs.com/
