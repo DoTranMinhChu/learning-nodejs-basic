@@ -773,7 +773,7 @@ NODEJS FOR BEGINNERS
 
 ====================================================================
 # VII. Middleware (https://expressjs.com/en/guide/using-middleware.html)
-* Middleware functions are functions that have access to the request object (req), the response object (res), and the next middleware function in the application’s request-response cycle. The next middleware function is commonly denoted by a variable named next.
+* Middleware functions are functions that have access to the request object (req), the response object (res), and the next middleware function in the application's request-response cycle. The next middleware function is commonly denoted by a variable named next.
 
 * Example code :
     * Write the following code into the file [index.js]
@@ -1137,13 +1137,13 @@ NODEJS FOR BEGINNERS
 
     * **Query by condition in MongoDB**
 
-| CONDITION | SYNTAX          | EXAMPLE | COMPATIBILITY SQL          |
-| ------------- | ----------- | ------------- | ----------- |
-| Equal | {&lt;key&gt;:value&gt;} | db.customer.find({“name”:”kai”}) | where name= ‘kai’ |
-| Like | {&lt;key&gt;:regex&gt;} | db.customer.find({“name”:/a/}) | where name like ‘%kai%’ |
-| Less than | {&lt;key&gt;:&lt;$lt:value&gt;}} | db.customer.find({“age”:{$lt:50}}) | where age < 50 |
-| Less than or equal | {&lt;key&gt;:&lt;$lte:value&gt;}} | db.customer.find({“age”:{$lte:50}}) | where age <= 50 |
-| Greater than | {&lt;key&gt;:{$gt:&lt;value&gt;}} | db.customer.find({“age”:{$gt:50}}) | where age > 50 |
-| Greater than or equal | {&lt;key&gt;:{$gte:&lt;value&gt;}} | db.customer.find({“age”:{$gte:50}}) | where age >= 50 |
-| Difference | &lt;key&gt;:{$ne:value&gt;}} | db.customer.find({“age”:{$ne:50}}) | where age != 50 |
+        | CONDITION | SYNTAX          | EXAMPLE | COMPATIBILITY SQL          |
+        | ------------- | ----------- | ------------- | ----------- |
+        | Equal | {&lt;key&gt;:value&gt;} | db.accounts.find({"username":"admin001"}) | where name= 'admin001' |
+        | Like | {&lt;key&gt;:regex&gt;} | db.accounts.find({username":/user/}) | where name like '%user%' |
+        | Less than | {&lt;key&gt;:&lt;$lt:value&gt;}} | db.accounts.find({"old":{$lt:22}}) | where old < 22 |
+        | Less than or equal | {&lt;key&gt;:&lt;$lte:value&gt;}} | db.accounts.find({"old":{$lte:22}}) | where old <= 22 |
+        | Greater than | {&lt;key&gt;:{$gt:&lt;value&gt;}} | db.accounts.find({"old":{$gt:22}}) | where old > 22 |
+        | Greater than or equal | {&lt;key&gt;:{$gte:&lt;value&gt;}} | db.accounts.find({"old":{$gte:22}}) | where old >= 22 |
+        | Difference | &lt;key&gt;:{$ne:value&gt;}} | db.accounts.find({"old":{$ne:22}}) | where old != 22 |
 
