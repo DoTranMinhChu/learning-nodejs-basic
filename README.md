@@ -1003,7 +1003,8 @@ NODEJS FOR BEGINNERS
 
             databases 
             
-    or 
+        or 
+
             show dbs 
       
 
@@ -1139,10 +1140,10 @@ NODEJS FOR BEGINNERS
 
         | CONDITION | SYNTAX          | EXAMPLE | COMPATIBILITY SQL          |
         | ------------- | ----------- | ------------- | ----------- |
-        | Equal | {&lt;key&gt;:value&gt;} | db.accounts.find({"username":"admin001"}) | where name= 'admin001' |
-        | Like | {&lt;key&gt;:regex&gt;} | db.accounts.find({"username":/user/}) | where name like '%user%' |
+        | Equal | {&lt;key&gt;:value&gt;} | db.accounts.find({"username":"admin001"}) | where username= 'admin001' |
+        | Like | {&lt;key&gt;:regex&gt;} | db.accounts.find({"username":/user/}) | where username like '%user%' |
         | Less than | {&lt;key&gt;:&lt;$lt:value&gt;}} | db.accounts.find({"old":{$lt:22}}) | where old < 22 |
-        | Less than or equal | {&lt;key&gt;:&lt;$lte:value&gt;}} | db.accounts.find({"old":{$lte:22}}) | where old <= 22 |
+        | Less than or equal | {&lt;key&gt;:&lt;$lte;value&gt;}} | db.accounts.find({"old":{$lte:22}}) | where old <= 22 |
         | Greater than | {&lt;key&gt;:{$gt:&lt;value&gt;}} | db.accounts.find({"old":{$gt:22}}) | where old > 22 |
         | Greater than or equal | {&lt;key&gt;:{$gte:&lt;value&gt;}} | db.accounts.find({"old":{$gte:22}}) | where old >= 22 |
         | Difference | &lt;key&gt;:{$ne:value&gt;}} | db.accounts.find({"old":{$ne:22}}) | where old != 22 |
@@ -1415,3 +1416,98 @@ NODEJS FOR BEGINNERS
                 use my_database
                 
                 db.players.find().sort({'country':1, 'age':-1})
+
+
+    * **Projection in MongoDB**
+        * Syntax
+
+
+                db.COLLECTION_NAME.find({condition},{field1:1,field2:0,...})
+
+        * Explain:
+            * {condition}: is the search condition, if you leave {} it will find all documents.
+            * field1: 1 indicates field1 to be displayed in the returned results. (By default the _id field is always returned)
+            * field2: 0: indicates field2 will not be displayed in the returned results.
+
+        * Create collection for testing :
+
+
+                use my_database
+
+                db.players.drop()
+
+                db.players.insert([
+                    {'_id':'1', 'name':'neymar', 'country':'brazil', 'age':'25'},
+                    {'_id':'2', 'name':'hazard', 'country':'belgium', 'age':'25'},
+                    {'_id':'3', 'name':'mbappe', 'country':'france', 'age':'18'},
+                    {'_id':'4', 'name':'modric', 'country':'croatia', 'age':'30'},
+                    {'_id':'5', 'name':'ronaldo', 'country':'portugal', 'age':'33'}
+                ])
+
+                db.players.find()
+
+
+        * Example 1:
+
+
+                use my_database
+                
+                db.players.find({},{'name':1})
+
+
+        * Example 2:
+
+
+                use my_database
+
+                db.player.find({'age':25},{'name':1, '_id':0})
+
+
+        * Example 3:
+
+
+                use my_database
+
+                db.players.find({},{'name':1})
+
+    * **Paging in MongoDB**
+
+        * Create collection for testing :
+
+
+                use my_database
+
+                db.players.drop()
+
+                db.players.insert([
+                    {'_id':'1', 'name':'neymar', 'country':'brazil', 'age':'25'},
+                    {'_id':'2', 'name':'hazard', 'country':'belgium', 'age':'25'},
+                    {'_id':'3', 'name':'mbappe', 'country':'france', 'age':'18'},
+                    {'_id':'4', 'name':'modric', 'country':'croatia', 'age':'30'},
+                    {'_id':'5', 'name':'ronaldo', 'country':'portugal', 'age':'33'}
+                ])
+
+                db.players.find()
+
+
+        * Example 1 (**limit()**):
+
+
+                use my_database
+                
+                db.players.find().limit(2)
+
+
+        * Example 2 (**skip()**):
+
+
+                use my_database
+                
+                db.players.find().skip(2)
+
+        * Exmample 3:
+
+
+                use my_database
+                
+                db.players.find().limit(2).skip(3)
