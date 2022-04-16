@@ -1199,9 +1199,11 @@ NODEJS FOR BEGINNERS
             db.accounts.find({'username':{$in: ['admin001', 'user001']}})
 
     * **Remove document in MongoDB**
-        * 
+        * Syxtax
+
                 db.COLLECTION_NAME.remove(DELLETION_CRITTERIA, justOne)
 
+        * Explain
             * DELLETION_CRITTERIA: Is the delete condition (which records will be deleted)
             * justOne: If value equals **1** or **true**, only *one* record will be deleted 
 
@@ -1293,7 +1295,13 @@ NODEJS FOR BEGINNERS
 
                 db.players.drop()
 
-                db.players.insert([{'_id':'1', 'name':'neymar', 'country':'brazil', 'age':'25'},{'_id':'2', 'name':'hazard', 'country':'belgium', 'age':'25'},{'_id':'3', 'name':'mbappe', 'country':'france', 'age':'18'},{'_id':'4', 'name':'modric', 'country':'croatia', 'age':'30'},{'_id':'5', 'name':'ronaldo', 'country':'portugal', 'age':'33'}])
+                db.players.insert([
+                    {'_id':'1', 'name':'neymar', 'country':'brazil', 'age':'25'},
+                    {'_id':'2', 'name':'hazard', 'country':'belgium', 'age':'25'},
+                    {'_id':'3', 'name':'mbappe', 'country':'france', 'age':'18'},
+                    {'_id':'4', 'name':'modric', 'country':'croatia', 'age':'30'},
+                    {'_id':'5', 'name':'ronaldo', 'country':'portugal', 'age':'33'}
+                ])
 
                 db.players.find()
 
@@ -1341,6 +1349,7 @@ NODEJS FOR BEGINNERS
 
                 db.players.find()
 
+
             * Meaning (Change the all documents with name = 'ronaldo' or name = 'modric' to become 'country' = 'vn'):
                 * SELECTION_CRITERIA : {'name': {$in :['ronaldo', 'modric']}}
                 * UPDATE : {$set: {'country':'vn'}}
@@ -1366,12 +1375,13 @@ NODEJS FOR BEGINNERS
 
     
     * **Sorting in MongoDB**
-        * 
+        * Syntax
 
 
                 db.COLLECTION_NAME.find().sort({field1:1, field2:-1,...})
 
 
+        * Explain:
             * field1: 1 means sort ascending by *field1*
             * field2: -1 means sort descending by *field2*
             * Note : *field1* has priority over *field2*
