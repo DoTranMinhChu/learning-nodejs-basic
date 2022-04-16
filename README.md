@@ -1069,8 +1069,7 @@ NODEJS FOR BEGINNERS
 
     ## **Insert document in MongoDB**
 
-        db.COL
-        LECTION_NAME.insert(document)
+        db.COLLECTION_NAME.insert(document)
 
 
     * Example 1:
@@ -1266,7 +1265,7 @@ NODEJS FOR BEGINNERS
             db.players.find()
 
     ## **Update document in MongoDB**
-    * 
+    * Syntax
             db.collection_name.update(
                 <SELECTION_CRITERIA&gt>
                 <UPDATE>,
@@ -1283,6 +1282,7 @@ NODEJS FOR BEGINNERS
 
                 {$set: {key1:value1, key2:value2, ...}}
 
+    * Explain
         * SELECTION_CRITERIA: Is the delete condition (which records will be updated)
         * UPDATE: The field is updated and the new value is updated.
         * upsert: (boolean): default is false. If true, a new document will be created if no documents are found that satisfy SELECTION_CRITERIA
@@ -1567,3 +1567,229 @@ NODEJS FOR BEGINNERS
             db.players.update({},{$unset:{country:""}})
 
             db.players.find()
+
+
+====================================================================
+# VIV. NodeJS using Mongoose to working with MongoDB
+> Ref connecting DB: https://www.npmjs.com/package/mongoose#user-content-connecting-to-mongodb
+> Ref Model: https://www.npmjs.com/package/mongoose#defining-a-model
+> Ref function's Model : https://mongoosejs.com/docs/api/model.html
+* Create Database with MongoDB
+    * Database: my_database
+        * Collection: Accounts
+            * username : String
+            * password : String
+            * fullname : String
+            * role : int (0: user ; 1: admin)
+    * Command create with MongoDB
+        
+            use my_database
+            db.Accounts.drop()
+            db.createCollection('Accounts')
+            db.Accounts.insert([
+                {username:'admin001',password: 'admin001', fullname: 'Admin 001', role: 1},
+                {username:'user001',password: 'user001', fullname: 'User 001', role: 0}
+            ])
+            db.Accounts.find()
+
+
+* Install Mongoose (https://mongoosejs.com/)
+
+        npm i mongoose
+
+* Simple code login and register
+    * Create new file [models>account.js]
+
+        │
+        ├───models
+        │       account.js
+        │   
+ 
+    * Write the following code into the file [models>accounts.js]
+
+            const mongoose = require("mongoose");
+            mongoose.connect('mongodb://localhost/my_database')
+            const { Schema } = mongoose
+
+            const AccountSchema = new Schema({
+                username: {
+                    type: String,
+                    required: true,
+                    unique: true
+                },
+                password: {
+                    type: String,
+                    required: true
+                },
+                fullname: String,
+                role: {
+                    type: Number,
+                    required: true
+                }
+            },{
+                
+                collection: 'Accounts',
+                versionKey: false
+            })
+
+            const AccountModel = mongoose.model('account',AccountSchema)
+
+            module.exports = AccountModel;
+
+
+    * Write the following code into the file [apiRouter.js]
+            const express = require('express');
+            const router = express.Router();
+
+            const AccountModel = require('./models/account');
+
+            router.post('/register', (req, res) => {
+                const {username,password,fullname,role} = req.body;
+                AccountModel.create({
+                    username : username,
+                    password: password,
+                    fullname:fullname,
+                    role:role
+                }).then(data=>{
+                    res.json({ Notification: "Register successfull", Data: data })
+                }).catch(err=>{
+                    res.status(400);
+                    res.json({ Notification: "Register unsuccessfull", Error: err })
+                })
+            
+            })
+
+            router.post('/login', (req, res) => {
+                const {username,password} = req.body;
+                AccountModel.find({
+                    username : username,
+                    password:password
+                }).then(data=>{
+                    res.json({ Notification: "Login successfull", Data: data })
+                }).catch(err=>{
+                    res.status(400);
+                    res.json({ Notification: "Login unsuccessfull", Error: err })
+                })
+            })
+
+            router.get('/list-accounts', (req, res) => {
+                const {username,password} = req.body;
+                AccountModel.find({})
+                .then(data=>{
+                    res.json(data)
+                }).catch(err=>{
+                    res.status(400);
+                    res.json(err)
+                })
+            })
+
+            module.exports = {
+                router
+            } 
+
+    * Write the following code into the file [index.js]
+
+            const express = require('express');
+            const app = express();
+            const bodyParser = require('body-parser');
+
+            const port = 3000;
+            const { router } = require('./apiRouter');
+
+
+            app.use(bodyParser.urlencoded({ extended: false }));
+            app.use(bodyParser.json());
+
+            app.get("/", (req, res) => {
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                res.write("<h1><a href='/list-accounts'>List Accounts</a></h1>");
+                
+                res.write("<h1>Register</h1>");
+                res.write("<form action='/register' method='POST'>");
+                res.write("<label>Username: </label><input type='text' name='username' required></br>");
+                res.write("<label>Password: </label><input type='password' name='password' required></br>");
+                res.write("<label>Full name: </label><input type='text' name='fullname'></br>");
+                res.write("<label>Role: </label><select name='role' id='role'><option value='0'>User</option><option value='1'>Admin</option></select></br>");
+                res.write("<input type='submit' name='action' value='register'></br>");
+                res.write("</form>");
+
+                res.write("<h1>Login</h1>");
+                res.write("<form action='/login' method='POST'>");
+                res.write("<label>Username: </label><input type='text' name='username' required></br>");
+                res.write("<label>Password: </label><input type='password' name='password' required></br>");
+                res.write("<input type='submit' name='action' value='login'></br>");
+                res.write("</form>");
+
+                res.send();
+            });
+
+            app.use("/", router);
+            app.listen(port, () => {
+                console.log(`Example app http://localhost:${port}/`);
+            });
+
+
+* Explain code
+    * In the file [models>account.js]
+        * 
+
+            mongoose.connect('mongodb://localhost/my_database')
+
+        > Connect to database mongodb name my_database (https://mongoosejs.com/docs/connections.html)
+
+        * 
+
+            const { Schema } = mongoose
+
+            const AccountSchema = new Schema({
+                username: {
+                    type: String,
+                    required: true,
+                    unique: true
+                },
+                password: {
+                    type: String,
+                    required: true
+                },
+                fullname: String,
+                role: {
+                    type: Number,
+                    required: true
+                }
+            },{            
+                collection: 'Accounts',
+                versionKey: false
+            })
+
+        >  **new Schema()** :  Everything in Mongoose starts with a Schema. Each schema maps to a MongoDB collection and defines the shape of the documents within that collection. (https://mongoosejs.com/docs/guide.html#definition)
+        > **collection: 'Accounts'** is this **schema** maps to a MongoDB collection **Accounts**  
+        > Accessing a Model **mongoose.model('account',AccountSchema)** (https://www.npmjs.com/package/mongoose#accessing-a-model)
+        * In the file [apiRouter.js]
+            * 
+                AccountModel.create({
+                    username : username,
+                    password: password,
+                    fullname:fullname,
+                    role:role
+                }).then(data=>{
+                   ..
+                }).catch(err=>{
+                    res.status(400);
+                    ...
+                }) 
+
+            > **AccountModel.create(object)** function to insert *object* into AccountModel (this model maps to a MongoDB collection **Accounts**) (https://mongoosejs.com/docs/api/model.html#model_Model.create)
+
+            * 
+                AccountModel.find({
+                    username : username,
+                    password:password
+                }).then(data=>{
+                    res.json({ Notification: "Login successfull", Data: data })
+                }).catch(err=>{
+                    res.status(400);
+                    res.json({ Notification: "Login unsuccessfull", Error: err })
+                })
+
+            > **AccountModel.find(object)** function to query *object* from AccountModel (this model maps to a MongoDB collection **Accounts**) (https://mongoosejs.com/docs/api/model.html#model_Model.find)
+        
