@@ -769,3 +769,381 @@ NODEJS FOR BEGINNERS
 
         * The app will now be able to handle requests to /api/v1/ and /api/v1/about and /api/v1/cart and ....
         * As well as call the timeLog middleware function that is specific to the route.
+
+
+====================================================================
+# VII. Middleware (https://expressjs.com/en/guide/using-middleware.html)
+* Middleware functions are functions that have access to the request object (req), the response object (res), and the next middleware function in the application’s request-response cycle. The next middleware function is commonly denoted by a variable named next.
+
+* Example code :
+    * Write the following code into the file [index.js]
+
+            const express = require('express');
+            const app = express();
+            const port = 3000;
+            const { router } = require('./apiRouter');
+
+            app.use("/", router);
+            app.listen(port, () => {
+            console.log(`Example app http://localhost:${port}/`)
+            })
+
+    * Write the following code into the file [apiRouter.js]
+
+            const express = require('express');
+            const router = express.Router();
+
+            router.use((req, res, next) => {
+                res.writeHead(200, { 'Content-Type': 'text/html' })
+                res.write('<a href="/user/abcxyz">/user/abcxyz</a></br>')
+                res.write('<a href="/user/a1b2c3">/user/a1b2c3</a></br>')
+                res.write('<a href="/user/0">/user/abcxyz</a></br>')
+                res.write('<a href="/admin/abcxyz">/admin/abcxyz</a></br>')
+                res.write('<a href="/admin/a1b2c3">/admin/a1b2c3</a></br>')
+                res.write('<a href="/admin/0">/admin/0</a></br>')
+                res.write('<a href="/">/</a></br>')
+                res.write(`</br>Time: ${Date.now()} </br>`);
+                next();
+            })
+
+            const checkReq = (req, res, next) => {
+                console.log(">> Check req : ", req)
+                next();
+            }
+            const getMethod = (req, res, next) => {
+
+                res.write(`Request Type: ${req.method} </br>`);
+                next();
+            }
+
+            const getOriginalUrl = (req, res, next) => {
+                res.write(`Request origin Url: ${req.originalUrl} </br>`);
+                next();
+            }
+
+            const getParamsId = (req, res, next) => {
+                res.write(`Request params id  : ${req.params.id} </br>`);
+                next();
+            }
+
+            const checkID = (req, res, next) => {
+                if (req.params.id === '0') next('route')
+                // otherwise pass control to the next middleware function in this stack
+                else next()
+            }
+
+            //---------------------------
+
+            router.get('/user/:id', getMethod, checkID, getOriginalUrl, getParamsId)
+
+            router.get('/user/:id', (req, res, next) => {
+                res.write('This is "User" page(1)</br>');
+                res.send();
+            })
+
+            //---------------------------
+
+            const logStuff = [getMethod, getOriginalUrl, getParamsId]
+            router.get('/admin/:id', checkID, (req, res, next) => {
+                res.write('This is "Admin" page(1)</br>');
+                res.send();
+            }, logStuff)
+
+
+            router.get('/admin/:id', (req, res, next) => {
+                res.write('This is "Admin" page(2)</br>');
+                res.send();
+            }, logStuff)
+
+            router.get('/', (req, res) => {
+                res.write('This is "Home" page')
+                res.send();
+            })
+
+
+            module.exports = {
+                router
+            } 
+
+
+* Explain code:
+    * The function middleware first has a chance to call **next()** to pass control to middleware second, or **next('route')** to pass control to the next matching route altogether.
+
+
+====================================================================
+# VIII. GET POST PUT DELETE 
+* Install extensions JSON viewer for google chrome to easily view .json file
+    * Link install : https://chrome.google.com/webstore/detail/json-viewer/gbmdgpbipfallnflgajpaliibnhdgobh
+* Install body-parser
+
+        npm install body-parser
+
+    > Node.js body parsing middleware.
+    > Parse incoming request bodies in a middleware before your handlers, available under the req.body property.
+    > ref : http://expressjs.com/en/resources/middleware/body-parser.html
+
+
+* Example code 
+    * Write the following code into the file [index.js]
+
+
+            const express = require('express');
+            const app = express();
+            var bodyParser = require('body-parser');
+
+            const port = 3000;
+            const { router } = require('./apiRouter');
+
+            app.use(bodyParser.urlencoded({ extended: false }));
+            app.use(bodyParser.json());
+
+            app.get("/", (req, res) => {
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                res.write("<h1>TEST GET</h1>");
+                res.write('<a href="/api?username=admin&pass=123456">/api?username=admin&pass=123456</a></br>');
+
+                res.write("<h1>TEST POST</h1>");
+                res.write("<form action='/api' method='POST'>");
+                res.write("<label>Username: </label><input type='text' name='username'></br>");
+                res.write("<label>Pass: </label><input type='text' name='pass'></br>");
+                res.write("<input type='submit' name='submit' value='submit POST'></br>");
+                res.write("</form>");
+
+                res.write("<h1>TEST PUT</h1>");
+                res.write("<form action='/api' method='PUT'>");
+                res.write("<label>Username: </label><input type='text' name='username'></br>");
+                res.write("<label>Pass: </label><input type='text' name='pass'></br>");
+                res.write("<input type='submit' name='submit' value='submit PUT'></br>");
+                res.write("</form>");
+
+                res.write("<h1>TEST DELETE</h1>");
+                res.write("<form action='/api' method='DELETE'>");
+                res.write("<label>Username: </label><input type='text' name='username'></br>");
+                res.write("<label>Pass: </label><input type='text' name='pass'></br>");
+                res.write("<input type='submit' name='submit' value='submit DELETE'></br>");
+                res.write("</form>");
+
+                res.send();
+            });
+
+            app.use("/api", router);
+            app.listen(port, () => {
+                console.log(`Example app http://localhost:${port}/`);
+            });
+
+    * Write the following code into the file [apiRouter.js]
+
+            const express = require('express');
+            const router = express.Router();
+
+
+            router.get('/', (req, res) => {
+                res.json({ Method: "Router using GET", Headers: req.headers, Body: req.body })
+            })
+
+            router.post('/', (req, res) => {
+                res.json({ Method: "Router using POST", headers: req.headers, body: req.body })
+            })
+
+
+            router.put('/', (req, res) => {
+                res.json({ Method: "Router using PUT", headers: req.headers, body: req.body })
+            })
+
+
+            router.delete('/', (req, res) => {
+                res.json({ Method: "Router using DELETE", headers: req.headers, body: req.body })
+            })
+
+
+            module.exports = {
+                router
+            } 
+
+* Run code and testing
+
+
+
+====================================================================
+# VIII. Resgiter Login using MongoDB
+
+* Dowload MongoDB 
+    * Link web dowload : https://www.mongodb.com/try/download/community
+    * Dowload MongoDB v.5.0.7 (Windows) : https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-5.0.7-signed.msi
+
+* Setup Enviroment Variables for mongoDB in Windows (Condition : Downloaded mongoDB successfully)
+    0. Copy MongoDB's bin directory
+        * Exmaple 
+        
+                C:\Program Files\MongoDB\Server\5.0\bin
+
+    1. Using Windows Search for search **Advanced system settings**
+    2. Open **Advanced system settings** ,  select the **Advanced** tab and click **Environment Variables**
+    3. In **System variables** tab , select row **Path** and click **Edit...**
+    4. When **Edit environment variable** tab appears , click **New**
+    5. Paste the copied MongoDB bin folder into path
+    6. Click **Ok**
+    7. Test MongoDB by opening cmd or powerShell and running the command 
+        
+            mongo
+
+    8. Done
+
+* Simple command with MongoDB (opening cmd or powerShell and running the command **mongo** to using MongoDB)
+    * **Create new database** in MongoDB
+
+
+            use database_name
+
+
+        * Note : If database already exists then switched to this database
+    
+    * **Display databases in MongoDB** 
+
+
+            databases 
+            
+    or 
+            show dbs 
+      
+
+    * **Drop database in MongoDB**
+
+
+            db.dropDatabase()
+
+
+        * Note :  You must connect to the database to be deleted first before executing the **db.dropDatabase()** command
+
+    * **Creating Collections in MongoDB**
+
+
+            db.createCollection(name, options)
+
+
+        * Example 1: 
+                
+
+                use my_database
+
+                db.createCollection('accounts')
+
+
+        * Example 2 : 
+
+
+                use my_database
+
+                db.createCollection('company',{capped:true, size: 6142800, max: 10000})
+            
+
+        * Note: name is the name of the collection, options are the accompanying options such as size, indexing ability...
+
+
+
+    * **Show Collections in MongoDB**
+
+
+            show collections
+
+
+        * Note :  You must connect to the database to be deleted first before executing the **show collections** command
+
+    * **Drop Collections in MongoDB**
+
+
+            db.COLLECTION_NAME.drop()
+
+
+        * Example: 
+                
+
+                use my_database
+
+                show collections
+
+                db.company.drop()
+
+                show collections
+
+
+    * **Insert document in MongoDB**
+
+            db.COL
+            LECTION_NAME.insert(document)
+
+
+        * Example 1:
+        
+
+                use my_database
+
+                show collections
+
+                db.accounts.insert({"username":"admin001","password": "123456", "old": 21})
+
+                db.accounts.insert({username:"admin002",password: "passadmin", old: 20})
+
+
+         * Example 2 (Insert multiple documents):
+        
+
+                use my_database
+
+                show collections
+
+                db.accounts.insert([{"username":"user001","password": "pass001", "old": 23},{"username":"user002","password": "pass002", "old": 22}])
+
+
+        * Example 3 (Insert into a collection that doesn't exist):
+
+
+                use my_database
+
+                show collections
+
+                db.company.insert({"name":"FPT","address":"Vietnam"})
+
+                show collections
+
+
+    * **Query data in MongoDB**
+
+
+            db.COLLECTION_NAME.find()
+
+
+        **or** (Pretty() result data **JSON format**)
+
+
+            db.COLLECTION_NAME.find().pretty()
+
+
+        * Example:
+
+
+                use my_database
+
+                show collections
+
+                db.accounts.find()
+
+                db.accounts.find().pretty()
+
+                db.company.find()
+
+                db.company.find().pretty()
+
+
+    * **Query by condition in MongoDB**
+
+| CONDITION | SYNTAX          | EXAMPLE | COMPATIBILITY SQL          |
+| ------------- | ----------- | ------------- | ----------- |
+| Equal | {&lt;key&gt;:value&gt;} | db.customer.find({“name”:”kai”}) | where name= ‘kai’ |
+| Like | {&lt;key&gt;:regex&gt;} | db.customer.find({“name”:/a/}) | where name like ‘%kai%’ |
+| Less than | {&lt;key&gt;:&lt;$lt:value&gt;}} | db.customer.find({“age”:{$lt:50}}) | where age < 50 |
+| Less than or equal | {&lt;key&gt;:&lt;$lte:value&gt;}} | db.customer.find({“age”:{$lte:50}}) | where age <= 50 |
+| Greater than | {&lt;key&gt;:{$gt:&lt;value&gt;}} | db.customer.find({“age”:{$gt:50}}) | where age > 50 |
+| Greater than or equal | {&lt;key&gt;:{$gte:&lt;value&gt;}} | db.customer.find({“age”:{$gte:50}}) | where age >= 50 |
+| Difference | &lt;key&gt;:{$ne:value&gt;}} | db.customer.find({“age”:{$ne:50}}) | where age != 50 |
+

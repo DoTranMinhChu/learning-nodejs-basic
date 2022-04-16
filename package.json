@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/DoTranMinhChu/learning-nodejs-basic#readme",
   "dependencies": {
+    "body-parser": "^1.20.0",
     "express": "^4.17.3"
   }
 }
