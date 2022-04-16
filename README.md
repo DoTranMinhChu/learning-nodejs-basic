@@ -990,7 +990,7 @@ NODEJS FOR BEGINNERS
     8. Done
 
 * Simple command with MongoDB (opening cmd or powerShell and running the command **mongo** to using MongoDB)
-    # **Create new database** in MongoDB
+    ## **Create new database** in MongoDB
 
 
             use database_name
@@ -998,7 +998,7 @@ NODEJS FOR BEGINNERS
 
         * Note : If database already exists then switched to this database
     
-    # **Display databases in MongoDB** 
+    ## **Display databases in MongoDB** 
 
 
             databases 
@@ -1008,7 +1008,7 @@ NODEJS FOR BEGINNERS
             show dbs 
       
 
-    # **Drop database in MongoDB**
+    ## **Drop database in MongoDB**
 
 
             db.dropDatabase()
@@ -1016,7 +1016,7 @@ NODEJS FOR BEGINNERS
 
         * Note :  You must connect to the database to be deleted first before executing the **db.dropDatabase()** command
 
-    # **Creating Collections in MongoDB**
+    ## **Creating Collections in MongoDB**
 
 
             db.createCollection(name, options)
@@ -1042,7 +1042,7 @@ NODEJS FOR BEGINNERS
 
 
 
-    # **Show Collections in MongoDB**
+    ## **Show Collections in MongoDB**
 
 
             show collections
@@ -1050,7 +1050,7 @@ NODEJS FOR BEGINNERS
 
         * Note :  You must connect to the database to be deleted first before executing the **show collections** command
 
-    # **Drop Collections in MongoDB**
+    ## **Drop Collections in MongoDB**
 
 
             db.COLLECTION_NAME.drop()
@@ -1068,7 +1068,7 @@ NODEJS FOR BEGINNERS
                 show collections
 
 
-    # **Insert document in MongoDB**
+    ## **Insert document in MongoDB**
 
             db.COL
             LECTION_NAME.insert(document)
@@ -1108,7 +1108,7 @@ NODEJS FOR BEGINNERS
                 show collections
 
 
-    # **Query data in MongoDB**
+    ## **Query data in MongoDB**
 
 
             db.COLLECTION_NAME.find()
@@ -1136,7 +1136,7 @@ NODEJS FOR BEGINNERS
                 db.company.find().pretty()
 
 
-    # **Query by condition in MongoDB**
+    ## **Query by condition in MongoDB**
 
         | CONDITION | SYNTAX          | EXAMPLE | COMPATIBILITY SQL          |
         | ------------- | ----------- | ------------- | ----------- |
@@ -1155,7 +1155,7 @@ NODEJS FOR BEGINNERS
 
                 db.accounts.find({"old":{$ne:22}}).pretty()
 
-    # **Using AND, OR , IN in query MongoDB**
+    ## **Using AND, OR , IN in query MongoDB**
 
         * **AND**
 
@@ -1199,7 +1199,7 @@ NODEJS FOR BEGINNERS
 
             db.accounts.find({'username':{$in: ['admin001', 'user001']}})
 
-    # **Remove document in MongoDB**
+    ## **Remove document in MongoDB**
         * Syxtax
 
                 db.COLLECTION_NAME.remove(DELLETION_CRITTERIA, justOne)
@@ -1266,7 +1266,7 @@ NODEJS FOR BEGINNERS
 
                 db.players.find()
 
-    # **Update document in MongoDB**
+    ## **Update document in MongoDB**
         * 
                 db.collection_name.update(
                     <SELECTION_CRITERIA&gt>
@@ -1375,7 +1375,7 @@ NODEJS FOR BEGINNERS
                 * Note, if you do not use $set in the update section, the fields that are not specified will be null
 
     
-    # **Sorting in MongoDB**
+    ## **Sorting in MongoDB**
         * Syntax
 
 
@@ -1418,7 +1418,7 @@ NODEJS FOR BEGINNERS
                 db.players.find().sort({'country':1, 'age':-1})
 
 
-    # **Projection in MongoDB**
+    ## **Projection in MongoDB**
         * Syntax
 
 
@@ -1470,7 +1470,7 @@ NODEJS FOR BEGINNERS
 
                 db.players.find({},{'name':1})
 
-    # **Paging in MongoDB**
+    ## **Paging in MongoDB**
 
         * Create collection for testing :
 
@@ -1511,8 +1511,8 @@ NODEJS FOR BEGINNERS
                 use my_database
                 
                 db.players.find().limit(2).skip(3)
-
-    # **Delete fields's collections in MongoDB**
+    
+    ## **Delete fields's collections in MongoDB**
         * Syntax:
 
 
