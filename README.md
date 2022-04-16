@@ -990,7 +990,7 @@ NODEJS FOR BEGINNERS
     8. Done
 
 * Simple command with MongoDB (opening cmd or powerShell and running the command **mongo** to using MongoDB)
-    * **Create new database** in MongoDB
+    # **Create new database** in MongoDB
 
 
             use database_name
@@ -1511,3 +1511,60 @@ NODEJS FOR BEGINNERS
                 use my_database
                 
                 db.players.find().limit(2).skip(3)
+
+    * **Delete fields's collections in MongoDB**
+        * Syntax:
+
+
+                db.collection_name.update(
+                    <SELECTION_CRITERIA>,
+                    { $unset: { <field1>: "", ... } },
+                        multi: <boolean>
+                )
+        * Explain:
+            * collection_name:  is the name of the collection
+            * SELECTION_CRITERIA: is the where clause in MongoDB used to select documents with deleted fields
+            * $unset: list of fields to be deleted
+            * ulti: (boolean): default is false. If it is true, it will allow deleting fields in multiple documents
+
+        * Create collection for testing :
+
+
+                use my_database
+
+                db.players.drop()
+
+                db.players.insert([
+                    {'_id':'1', 'name':'neymar', 'country':'brazil', 'age':'25'},
+                    {'_id':'2', 'name':'hazard', 'country':'belgium', 'age':'25'},
+                    {'_id':'3', 'name':'mbappe', 'country':'france', 'age':'18'},
+                    {'_id':'4', 'name':'modric', 'country':'croatia', 'age':'30'},
+                    {'_id':'5', 'name':'ronaldo', 'country':'portugal', 'age':'33'}
+                ])
+
+                db.players.find()
+
+
+        * Example 1:
+
+
+                use my_database
+                
+                db.players.find()
+
+                db.players.updateMany({},{$unset:{age:""}})
+
+                db.players.find()
+
+
+        > Or  *db.player.update({},{$unset:{age:""}},{multi: true})*
+
+        * Example 2:
+
+                use my_database
+                
+                db.players.find()
+
+                db.players.update({},{$unset:{country:""}})
+
+                db.players.find()
