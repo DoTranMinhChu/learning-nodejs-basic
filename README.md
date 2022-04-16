@@ -965,7 +965,7 @@ NODEJS FOR BEGINNERS
 
 
 ====================================================================
-# VIII. Resgiter Login using MongoDB
+# VIII. MongoDB
 
 * Dowload MongoDB 
     * Link web dowload : https://www.mongodb.com/try/download/community
@@ -1140,10 +1140,268 @@ NODEJS FOR BEGINNERS
         | CONDITION | SYNTAX          | EXAMPLE | COMPATIBILITY SQL          |
         | ------------- | ----------- | ------------- | ----------- |
         | Equal | {&lt;key&gt;:value&gt;} | db.accounts.find({"username":"admin001"}) | where name= 'admin001' |
-        | Like | {&lt;key&gt;:regex&gt;} | db.accounts.find({username":/user/}) | where name like '%user%' |
+        | Like | {&lt;key&gt;:regex&gt;} | db.accounts.find({"username":/user/}) | where name like '%user%' |
         | Less than | {&lt;key&gt;:&lt;$lt:value&gt;}} | db.accounts.find({"old":{$lt:22}}) | where old < 22 |
         | Less than or equal | {&lt;key&gt;:&lt;$lte:value&gt;}} | db.accounts.find({"old":{$lte:22}}) | where old <= 22 |
         | Greater than | {&lt;key&gt;:{$gt:&lt;value&gt;}} | db.accounts.find({"old":{$gt:22}}) | where old > 22 |
         | Greater than or equal | {&lt;key&gt;:{$gte:&lt;value&gt;}} | db.accounts.find({"old":{$gte:22}}) | where old >= 22 |
         | Difference | &lt;key&gt;:{$ne:value&gt;}} | db.accounts.find({"old":{$ne:22}}) | where old != 22 |
 
+
+        * Can using pretty()
+
+                db.accounts.find({"old":{$lte:22}}).pretty()
+
+                db.accounts.find({"old":{$ne:22}}).pretty()
+
+    * **Using AND, OR , IN in query MongoDB**
+
+        * **AND**
+
+            {$and: [{key1: value1}, {key2:value2},...]}
+
+        * **OR**
+
+            {$or: [{key1: value1}, {key2:value2},...]}
+
+        * **IN**
+
+            {key:{$in: [value1, value2,...]}}
+
+        * Example 1 (**AND**): 
+
+
+                use my_database
+
+                db.accounts.find({$and: [ {"username":/admin/}, {"old":{$gte:20}}] })
+
+        * Example 2 (**OR**): 
+
+
+                use my_database
+
+                db.accounts.find({$or: [ {"username":/admin/}, {"old":{$gte:20}} ]})
+
+
+        * Example 3 (**OR , AND**)
+
+
+                use my_database
+
+                db.accounts.find({$or: [ {"username":/admin/},{ $and: [{"old":{$gte:20}}, {"old":{$lte:22}}] } ]})
+
+
+        * Example 4 (**IN**)
+
+
+            use my_database 
+
+            db.accounts.find({'username':{$in: ['admin001', 'user001']}})
+
+    * **Remove document in MongoDB**
+        * 
+                db.COLLECTION_NAME.remove(DELLETION_CRITTERIA, justOne)
+
+            * DELLETION_CRITTERIA: Is the delete condition (which records will be deleted)
+            * justOne: If value equals **1** or **true**, only *one* record will be deleted 
+
+
+        * Create collection for testing :
+
+                use my_database
+
+                db.players.drop()
+
+                db.players.insert([{'_id':'1', 'name':'neymar', 'country':'brazil', 'age':'25'},{'_id':'2', 'name':'hazard', 'country':'belgium', 'age':'25'},{'_id':'3', 'name':'mbappe', 'country':'france', 'age':'18'},{'_id':'4', 'name':'modric', 'country':'croatia', 'age':'30'},{'_id':'5', 'name':'ronaldo', 'country':'portugal', 'age':'33'}])
+
+                db.players.find()
+                
+            
+        * Example 1 :
+
+
+                use my_database
+
+                db.players.find()
+
+                db.players.remove({'name':'neymar'})
+
+                db.players.find()
+
+
+        * Example 2 :
+
+
+                use my_database
+
+                db.players.find()
+
+                db.players.remove({'name':/n/})
+
+                db.players.find()
+
+
+        * Example 3:
+
+                use my_database
+
+                db.players.find()
+
+                db.players.remove({'name':/a/},true)
+
+                db.players.find()
+
+
+        * Example 4:
+
+
+                use my_database
+
+                db.players.find()
+
+                db.players.remove({$and: [{'name':/^m/},{'country':'france'}]})
+
+                db.players.find()
+
+    * **Update document in MongoDB**
+        * 
+                db.collection_name.update(
+                    <SELECTION_CRITERIA&gt>
+                    <UPDATE>,
+                    {
+                        upsert: <boolean>,
+                        multi: <boolean>,
+                        writeConcern: <document>,
+                        collation: <document>,
+                        arrayFilters: [ <filterdocument1>, ... ]
+                    }
+                )
+
+            while &lt;UPDATE&gt; :
+
+                    {$set: {key1:value1, key2:value2, ...}}
+
+            * SELECTION_CRITERIA: Is the delete condition (which records will be updated)
+            * UPDATE: The field is updated and the new value is updated.
+            * upsert: (boolean): default is false. If true, a new document will be created if no documents are found that satisfy SELECTION_CRITERIA
+            * multi: (boolean): default is false. If it is true, then it is allowed to update multiple documents with the same SELECTION_CRITERIA
+            * ...
+
+        * Create collection for testing :
+
+                use my_database
+
+                db.players.drop()
+
+                db.players.insert([{'_id':'1', 'name':'neymar', 'country':'brazil', 'age':'25'},{'_id':'2', 'name':'hazard', 'country':'belgium', 'age':'25'},{'_id':'3', 'name':'mbappe', 'country':'france', 'age':'18'},{'_id':'4', 'name':'modric', 'country':'croatia', 'age':'30'},{'_id':'5', 'name':'ronaldo', 'country':'portugal', 'age':'33'}])
+
+                db.players.find()
+
+
+        * Example 1:
+
+
+                use my_database
+
+                db.players.find()
+
+                db.players.update({'age':'25'},{$set: {'country':'spain'}})
+
+                db.players.find()
+
+
+            * Meaning (Change the first document with 'country'= 'spain' to become 'age' = '25'):
+                * SELECTION_CRITERIA : {'age':'25'}
+                * UPDATE : {$set: {'country':'spain'}}
+
+
+        * Example 2:
+
+
+                use my_database
+
+                db.players.find()
+
+                db.players.update({'_id':'1'},{$set: {'country':'japan','name':'honda'}})
+
+                db.players.find()
+
+            * Meaning (Change the first document with '_id' = '1' to become 'country' = 'japan', name = 'honda'):
+                * SELECTION_CRITERIA : {'_id':'1'}
+                * UPDATE : {$set: {'country':'japan','name':'honda'}}
+
+        * Example 3:
+
+
+                use my_database
+
+                db.players.find()
+
+                db.players.update({'name': {$in :['ronaldo', 'modric']}},{$set: {'country':'vn'}}, {'multi':true})
+
+                db.players.find()
+
+            * Meaning (Change the all documents with name = 'ronaldo' or name = 'modric' to become 'country' = 'vn'):
+                * SELECTION_CRITERIA : {'name': {$in :['ronaldo', 'modric']}}
+                * UPDATE : {$set: {'country':'vn'}}
+                * multi : true     
+
+        * Example 4 :
+
+
+                use my_database
+
+                db.players.find()
+
+                db.players.update({'_id':'1'}, {'country':'japan','name':'honda'})
+
+                db.players.find()
+
+
+            * Meaning :
+                * SELECTION_CRITERIA : {'name': {$in :['ronaldo', 'modric']}}
+                * UPDATE : {$set: {'country':'vn'}}
+                * multi : true
+                * Note, if you do not use $set in the update section, the fields that are not specified will be null
+
+    
+    * **Sorting in MongoDB**
+        * 
+
+
+                db.COLLECTION_NAME.find().sort({field1:1, field2:-1,...})
+
+
+            * field1: 1 means sort ascending by *field1*
+            * field2: -1 means sort descending by *field2*
+            * Note : *field1* has priority over *field2*
+        * Create collection for testing :
+
+                use my_database
+
+                db.players.drop()
+
+                db.players.insert([
+                    {'_id':'1', 'name':'neymar', 'country':'brazil', 'age':25},
+                    {'_id':'2', 'name':'hazard', 'country':'belgium', 'age':25},
+                    {'_id':'3', 'name':'mbappe', 'country':'france', 'age':18},
+                    {'_id':'4', 'name':'modric', 'country':'croatia', 'age':30},
+                    {'_id':'5', 'name':'ronaldo', 'country':'portugal', 'age':33},
+                    {'_id':'6', 'name':'messi', 'country':'argentina', 'age':31},
+                    {'_id':'7', 'name':'icardi', 'country':'argentina', 'age':25},
+                    {'_id':'8', 'name':'griezmann', 'country':'france', 'age':28}
+                ])
+
+                db.players.find()
+
+        * Example 1:
+
+                use my_database
+
+                db.players.find().sort({'name':1})
+
+        * Example 2:
+
+                use my_database
+                
+                db.players.find().sort({'country':1, 'age':-1})
