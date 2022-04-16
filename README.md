@@ -1570,7 +1570,7 @@ NODEJS FOR BEGINNERS
 
 
 ====================================================================
-# VIV. NodeJS using Mongoose to working with MongoDB
+# IX. NodeJS using Mongoose to working with MongoDB
 > Ref connecting DB: https://www.npmjs.com/package/mongoose#user-content-connecting-to-mongodb
 > Ref Model: https://www.npmjs.com/package/mongoose#defining-a-model
 > Ref function's Model : https://mongoosejs.com/docs/api/model.html
@@ -1795,3 +1795,134 @@ NODEJS FOR BEGINNERS
 
             > **AccountModel.find(object)** function to query *object* from AccountModel (this model maps to a MongoDB collection **Accounts**) (https://mongoosejs.com/docs/api/model.html#model_Model.find)
         
+    
+
+====================================================================
+# X. Restful API
+* It can be said that REST principles and RESTful data structures are widely known in the world of web programmers in general and application programmers in particular.
+* It can be said that REST is not a technology in itself. It is a method of creating APIs with certain organizational principles. These principles are intended to guide programmers to create a comprehensive API request processing environment.
+* API : Application Programming Interface
+* REST: REpresentational State Transfer 
+* The most important function of REST is to specify how to use HTTP methods (such as GET, POST, PUT, DELETE, ...)
+    * GET (SELECT): Returns a Resource or a list of Resources.
+    * POST (CREATE): Create a new Resource.
+    * PUT (UPDATE): Update information for Resource.
+    * DELETE (DELETE): Delete a Resource.
+
+* Simple Restful API:
+    * Create new file [routers>account.js]
+
+            │     
+            ├───models
+            │       account.js
+            │
+            ├───routers
+            │       account.js
+            │
+            │ index.js
+
+    * Write the following code into the file [routers>account.js]
+
+            const express = require('express');
+            const router = express.Router()
+
+            const AccountModel = require('../models/account')
+
+            // Get all 
+            router.get('/', (req, res, next) => {
+                AccountModel.find({})
+                    .then(data => {
+                        res.json({method:'GET',data});
+                    })
+                    .catch(err => {
+                        res.json(err)
+                    })
+            })
+
+            // Get one
+            router.get('/:id', (req, res, next) => {
+                const { id } = req.params;
+                AccountModel.find({
+                    _id: id
+                })
+                    .then(data => {
+                        res.json({method:'GET',data});
+                    })
+                    .catch(err => {
+                        res.json(err)
+                    })
+            })
+
+            // create new account
+            router.post('/', (req, res, next) => {
+                const { username, password, fullname, role } = req.body;
+                AccountModel.create({
+                    username: username,
+                    password: password,
+                    fullname: fullname,
+                    role: role
+                })
+                    .then(data => {
+                        res.json({method:'POST',data});
+                    })
+                    .catch(err => {
+                        res.json(err)
+                    })
+            })
+
+            // update
+            router.put('/:id', (req, res, next) => {
+                const { id } = req.params;
+                AccountModel.updateOne({
+                    _id: id
+                }, {
+                    password: 'newpassword'
+                })
+                    .then(data => {
+                        res.json({method:'PUT',data});
+                    })
+                    .catch(err => {
+                        res.json(err)
+                    })
+            })
+
+            //delete
+            router.delete('/:id', (req, res, next) => {
+                const { id } = req.params;
+                AccountModel.deleteOne({
+                    _id: id
+                })
+                    .then(data => {
+                        res.json({method:'DELETE',data});
+                    })
+                    .catch(err => {
+                        res.json(err)
+                    })
+            })
+
+
+            module.exports = {
+                routerAccount : router
+            } 
+
+
+    * Write the following code into the file [index.js]
+
+            const express = require('express');
+            const app = express();
+            var bodyParser = require('body-parser');
+
+            const port = 3000;
+            const { routerAccount } = require('./routers/account');
+
+            app.use(bodyParser.urlencoded({ extended: false }));
+            app.use(bodyParser.json());
+
+            app.get("/", (req, res) => {
+                res.send()
+            });
+
+            app.use("/api/account", routerAccount);
+            app.listen(port, () => {
+                console.log(`Example app http://localhost:${port}/api/account`);
+            });
