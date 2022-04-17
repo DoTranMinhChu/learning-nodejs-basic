@@ -1,0 +1,49 @@
+.list-products {
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+  
+}
+
+.list-products td,
+.list-products th {
+    padding: 5px 10px;
+    border: 1px solid;
+}
+.list-products table {
+    border: 1px solid;
+
+    border-collapse: collapse;
+}
+
+.list-products td img{
+    width: 100px;
+    height: 100px;
+}
+
+.paging-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.paging-box .paging-item{
+    cursor: pointer;
+    font-size: large;
+    font-weight: 700;
+    margin: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid black;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+}
+.paging-box .paging-item:hover{
+    background-color: gray;
+}
+
+.paging-box .paging-item.active{
+    background-color: black;
+    color: white;
+}

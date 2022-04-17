@@ -1926,3 +1926,583 @@ NODEJS FOR BEGINNERS
             app.listen(port, () => {
                 console.log(`Example app http://localhost:${port}/api/account`);
             });
+
+
+
+====================================================================
+# X. Paging API using AJAX
+https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
+
+* Create data for MongoDB
+
+            use my_database
+
+            db.Products.drop()
+
+            db.Products.insert([
+                {
+                        "name" : "NUTRIENT RICH FACIAL MOISTURIZER",
+                        "type" : "SUPER GREENS",
+                        "price" : 12.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Super_Greens_Nutrient_Rich_Facial_Moisturiser_125ml_01_Product_Base_720x.jpg?v=1599504594"
+                },
+                {
+                        "name" : "ROSE HYDRATING MIST TONER",
+                        "type" : "SIGNATURE",
+                        "price" : 9.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Masterbrand_Rose_Mist_Toner_125ml_01_Product_720x.jpg?v=1599504649"     
+                },
+                {
+                        "name" : "HYDRATING MIST TONER",
+                        "type" : "SIGNATURE",
+                        "price" : 9.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Signature_Hydrating_Mist_Toner_125ml_01_Product_1080x.jpg?v=1599504641" 
+                },
+                {
+                        "name" : "FACIAL MOISTURIZER PUMP",
+                        "type" : "SIGNATURE",
+                        "price" : 9.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Signature_Facial_Moisturiser_125ml_01_Product_1080x.jpg?v=1599504612"   
+                },
+                {
+                        "name" : "FOAMING FACIAL CLEANSER PUMP",
+                        "type" : "SIGNATURE",
+                        "price" : 9.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Signature_Foaming_Facial_Cleanser_125ml_01_Product_1080x.jpg?v=1599504600"
+                },
+                {
+                        "name" : "MICELLAR CLEANSING WATER",
+                        "type" : "SIGNATURE",
+                        "price" : 10.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Signature_Micellar_Cleansing_Water_250ml_01_Product_720x.jpg?v=1599504588"
+                },
+                {
+                        "name" : "CREAM CLEANSER",
+                        "type" : "SIGNATURE",
+                        "price" : 9.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Signature_Cream_Cleanser_125ml_01_Product_720x.jpg?v=1599504664"        
+                },
+                {
+                        "name" : "REVITALIZING FACIAL SCRUB",
+                        "type" : "SIGNATURE",
+                        "price" : 9.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Signature_Revitalising_Facial_Scrub_125ml_01_Product_720x.jpg?v=1599504656"
+                },
+                {
+                        "name" : "PURIFYING FACIAL MASK",
+                        "type" : "SIGNATURE",
+                        "price" : 12.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Signature_Purifying_Facial_Masque_01_Product_2_900x.jpg?v=1599504582"   
+                },
+                {
+                        "name" : "eve.holt@reqres.in",
+                        "type" : "Eve",
+                        "price" : 1000,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Signature_Hydrating_Facial_Masque_01_Product_2_1080x.jpg?v=1599504579"  
+                },
+                {
+                        "name" : "ANTIOXIDANT EYE SERUM",
+                        "type" : "SIGNATURE",
+                        "price" : 15.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Signature_Antioxident_Eye_Serum_01_Product_720x.jpg?v=1599504580"       
+                },
+                {
+                        "name" : "MOISTURE RESTORING NIGHT CREAM",
+                        "type" : "SIGNATURE",
+                        "price" : 15.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Signature_Moisture_Restoring_Night_Cream_120ml_01_Product_2_720x.jpg?v=1599504662"
+                },
+                {
+                        "name" : "HYDRATING DAY CREAM",
+                        "type" : "ROSEHIP",
+                        "price" : 17.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Rosehip_Product_4_720x.jpg?v=1599504613"
+                },
+                {
+                        "name" : "NOURISHING CREAM CLEANSER",
+                        "type" : "ROSEHIP",
+                        "price" : 12.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Sukin_Rosehip_Nourishing_Cream_cleanser_720x.jpg?v=1599504654"
+                },
+                {
+                        "name" : "CERTIFIED ORGANIC",
+                        "type" : "ROSEHIP OIL",
+                        "price" : 20.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Sukin_Rosehip_Oil-25ml-Product_720x.jpg?v=1599504623"
+                },
+                {
+                        "name" : "ANTI-POLLUTION FACIAL MASK",
+                        "type" : "OIL BALANCING",
+                        "price" : 17.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/sukin-oil-balancing-anti-pollution-mattifying-facial-masque_720x.jpg?v=1599504614"
+                },
+                {
+                        "name" : "CLARIFYING FACIAL TONIC",
+                        "type" : "OIL BALANCING",
+                        "price" : 11.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Oil_Balancing_Clarifying_Facial_Tonic_125ml_01_Product_Base_720x.jpg?v=1599504655"
+                },
+                {
+                        "name" : "PORE REFINING FACIAL SCRUB",
+                        "type" : "OIL BALANCING",
+                        "price" : 11.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Oil_Balancing_Pore_Refining_Facial_Scrub_125ml_01_Product_720x.jpg?v=1599504657"
+                },
+                {
+                        "name" : "DETOXIFYING FACIAL SCRUB",
+                        "type" : "SUPER GREENS",
+                        "price" : 12.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Super_Greens_Detoxifying_Facial_Scrub_125ml_01_Product_720x.jpg?v=1599504637"
+                },
+                {
+                        "name" : "FACIAL RECOVERY SERUM",
+                        "type" : "SUPER GREENS",
+                        "price" : 15.99,
+                        "image" : "https://cdn.shopify.com/s/files/1/0081/7374/8305/products/Super_Greens_Facial_Recovery_Serum_30ml_01_Product_720x.jpg?v=1599504591"
+                }
+            ])
+
+            db.Products.find().pretty()
+
+
+* Project restructuring
+
+        │   app.js
+        │   package-lock.json
+        │   package.json
+        │
+        ├───models
+        │       account.model.js
+        │       product.model.js
+        │
+        ├───public
+        │   ├───css
+        │   │       home-style.css
+        │   │
+        │   └───js
+        │           home-script.js
+        │           jquery.min.js
+        │
+        ├───routers
+        │       account.router.js
+        │       product.router.js
+        │
+        └───views
+            └───home
+                    index.html
+
+
+
+* Write the following code into the files
+    * [models>product.model.js]
+
+            const mongoose = require('mongoose');
+            mongoose.connect('mongodb://localhost/my_database');
+
+            const { Schema } = mongoose
+
+            const ProductSchema = new Schema({
+                name: {
+                    type: String,
+                    required: true,
+                    uppercase: true
+                },
+                type: {
+                    type: String,
+                    required: true,
+                    uppercase: true
+                },
+                price: {
+                    type: Number,
+                    required: true,
+                    uppercase: true
+                },
+                image: {
+                    type: String,
+                    required: true,
+                    uppercase: true
+                }
+            }, {
+                collection:'Products',
+                versionKey: false
+            })
+
+            const ProductModel = mongoose.model('product',ProductSchema)
+
+            module.exports = ProductModel;
+
+    * [models>product.model.js]
+
+            const mongoose = require("mongoose");
+            mongoose.connect('mongodb://localhost/my_database')
+            const { Schema } = mongoose
+
+            const AccountSchema = new Schema({
+                username: {
+                    type: String,
+                    required: true,
+                    unique: true
+                },
+                password: {
+                    type: String,
+                    required: true
+                },
+                fullname: String,
+                role: {
+                    type: Number,
+                    required: true
+                }
+            },{
+                
+                collection: 'Accounts',
+                versionKey: false
+            })
+
+            const AccountModel = mongoose.model('account',AccountSchema)
+
+            module.exports = AccountModel;
+
+    * [routers>account.router.js]
+
+            const express = require('express');
+            const router = express.Router()
+
+            const AccountModel = require('../models/account.model')
+
+            // Get all 
+            router.get('/', (req, res, next) => {
+                AccountModel.find({})
+                    .then(data => {
+                        res.json({method:'GET',data});
+                    })
+                    .catch(err => {
+                        res.json(err)
+                    })
+            })
+
+            // Get one
+            router.get('/:id', (req, res, next) => {
+                const { id } = req.params;
+                AccountModel.find({
+                    _id: id
+                })
+                    .then(data => {
+                        res.json({method:'GET',data});
+                    })
+                    .catch(err => {
+                        res.json(err)
+                    })
+            })
+
+            // create new account
+            router.post('/', (req, res, next) => {
+                const { username, password, fullname, role } = req.body;
+                AccountModel.create({
+                    username: username,
+                    password: password,
+                    fullname: fullname,
+                    role: role
+                })
+                    .then(data => {
+                        res.json({method:'POST',data});
+                    })
+                    .catch(err => {
+                        res.json(err)
+                    })
+            })
+
+            // update
+            router.put('/:id', (req, res, next) => {
+                const { id } = req.params;
+                AccountModel.updateOne({
+                    _id: id
+                }, {
+                    password: 'newpassword'
+                })
+                    .then(data => {
+                        res.json({method:'PUT',data});
+                    })
+                    .catch(err => {
+                        res.json(err)
+                    })
+            })
+
+            //delete
+            router.delete('/:id', (req, res, next) => {
+                const { id } = req.params;
+                AccountModel.deleteOne({
+                    _id: id
+                })
+                    .then(data => {
+                        res.json({method:'DELETE',data});
+                    })
+                    .catch(err => {
+                        res.json(err)
+                    })
+            })
+
+
+            module.exports = router
+
+    * [routers>product.router.js]
+
+            const express = require('express');
+            const router = express.Router();
+
+            const ProductModel = require('../models/product.model');
+
+            router.get('/', async (req, res, next) => {
+                let total;
+                await ProductModel.countDocuments({})
+                    .then(data => total = data)
+                    .catch(err => total = 0)
+                let { page } = req.query
+                page = parseInt(page);
+                page = page < 1 ? 1 : page;
+                const per_page = 6;
+                const total_page = Math.ceil(total / per_page);
+
+                if (!page) {
+                    ProductModel.find({})
+                        .then(data => {
+                            res.json({
+                                per_page: total,
+                                total: total,
+                                total_page: 1,
+                                data: data
+                            })
+                        })
+                        .catch(err => {
+                            res.json(err)
+                        })
+                } else {
+
+                    ProductModel.find().skip(per_page * (page - 1)).limit(per_page)
+                        .then(data => {
+                            res.json({
+                                page: page,
+                                per_page: per_page,
+                                total: total,
+                                total_page: total_page,
+                                data: data
+                            })
+                        })
+                        .catch(err => {
+                            res.json(err)
+                        })
+                }
+
+            })
+
+
+            module.exports = router
+
+    
+    * [views>home>index.html]
+
+            <!DOCTYPE html>
+            <html lang="en">
+
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="/public/css/home-style.css">
+                <title>Home</title>
+            </head>
+
+            <body>
+                <div id="list-products" class="list-products"></div>
+
+                <div id="paging-list-products" class="paging-box">
+                </div>
+                <script src="/public/js/jquery.min.js"></script>
+                <script src="/public/js/home-script.js"></script>
+            </body>
+
+            </html>
+    
+    * [public>css>home-style.css]
+
+            .list-products {
+                margin: 10px;
+                display: flex;
+                justify-content: center;
+            
+            }
+
+            .list-products td,
+            .list-products th {
+                padding: 5px 10px;
+                border: 1px solid;
+            }
+            .list-products table {
+                border: 1px solid;
+
+                border-collapse: collapse;
+            }
+
+            .list-products td img{
+                width: 100px;
+                height: 100px;
+            }
+
+            .paging-box{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .paging-box .paging-item{
+                cursor: pointer;
+                font-size: large;
+                font-weight: 700;
+                margin: 4px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 2px solid black;
+                border-radius: 5px;
+                width: 30px;
+                height: 30px;
+            }
+            .paging-box .paging-item:hover{
+                background-color: gray;
+            }
+
+            .paging-box .paging-item.active{
+                background-color: black;
+                color: white;
+            }
+
+    * [public>js>home-script.js]
+
+            function pagingListProduct(page, length) {
+                const pagingListProduct = $('#paging-list-products')
+                pagingListProduct.html('');
+                for (let i = 0; i < length; i++) {
+                    pagingListProduct.append(`
+                    <div class="paging-item ${page == i + 1 ? 'active' : ''}" onclick="changePage(${i + 1})">${i + 1}</div>
+                    `)
+                }
+            }
+
+
+            function changePage(page) {
+                $.ajax({
+                    url: `/api/product?page=${page}`,
+                    type: 'GET',
+                    dataType: 'json'
+                })
+                    .then(data => {
+                        pagingListProduct(page, data.total_page)
+                        const listPorductTag = $('#list-products')
+                        listPorductTag.html('');
+                        listPorductTag.append(`
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Price</th>
+                                        <th>Image</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                
+                                </tbody>
+                            </table>
+                        `)
+                        const tbodyListProductTag = $('#list-products tbody')
+                        for (let i = 0; i < data.data.length; i++) {
+                            let product = data.data[i];
+                            tbodyListProductTag.append(`
+                                <tr>
+                                    <td>${product.name}</td>
+                                    <td>${product.type}</td>
+                                    <td>${product.price}</td>
+                                    <td><img src=${product.image} alt="prd-img"></img></td>
+                                </tr>
+                            `)
+                        }
+
+
+
+
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+            }
+
+            changePage(1)
+
+    * [app.js]
+
+            const express = require('express');
+            const app = express();
+            const path = require('path');
+            const bodyParser = require('body-parser');
+
+            const port = 3000;
+            const routerAccount = require('./routers/account.router');
+            const routerProduct = require('./routers/product.router');
+
+            app.use(bodyParser.urlencoded({ extended: false }));
+            app.use(bodyParser.json());
+
+            app.use('/public', express.static(path.join(__dirname, 'public')));
+
+            app.use("/api/account", routerAccount);
+            app.use("/api/product", routerProduct);
+
+            app.get("/home", (req, res) => {
+                res.sendFile(path.join(__dirname, 'views/home/index.html'))
+            });
+
+
+
+            app.listen(port, () => {
+                console.log(`Example app http://localhost:${port}/home`);
+                console.log(`Example app http://localhost:${port}/api/product`);
+                console.log(`Example app http://localhost:${port}/api/product?page=1`);
+                console.log(`Example app http://localhost:${port}/api/product?page=2`);
+            });
+
+* Explain code the files:
+    * [routers>product.router.js]
+        * Assign size of collection **Products** (in MongoDB)
+
+                let total;
+                await ProductModel.countDocuments({})
+                    .then(data => total = data)
+                    .catch(err => total = 0)
+
+        * Skips the first **n** products and returns the next **k** products from the collection **Products** (in MongoDB)
+
+                ProductModel.find().skip( n ).limit( k )
+
+    * [public>js>home-script.js] (Using Jquery to paging)
+        * 
+                $.ajax({
+                    url: `/api/product?page=${page}`,
+                    type: 'GET',
+                    dataType: 'json'
+                })
+                    .then(data => {})
+                    .catch(err =>{})
+
+
+            * That send request 'GET' to **/api/product?page=${page}** (**page** is Integer)
+            * Doing this we can get the **data** of the returned json **/api/product?page=${page}**
+            * Ref link : https://api.jquery.com/jquery.ajax/
+    
+    * [app.js]
+        * Serving static files in Express
+               
+                app.use('/public', express.static(path.join(__dirname, 'public')));
+
+            * **__dirname** is an environment variable that tells you the absolute path of the directory containing the currently executing file.
+            * Try static file :
+                * http://localhost:3000/public/css/home-style.css
+                * http://localhost:3000/public/js/home-script.js
+            * Ref : https://expressjs.com/en/starter/static-files.html

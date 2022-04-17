@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router()
 
-const AccountModel = require('../models/account')
+const AccountModel = require('../models/account.model')
 
 // Get all 
 router.get('/', (req, res, next) => {
@@ -76,6 +76,4 @@ router.delete('/:id', (req, res, next) => {
 })
 
 
-module.exports = {
-    routerAccount : router
-} 
+module.exports = router
