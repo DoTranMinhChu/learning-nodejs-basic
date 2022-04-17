@@ -1931,7 +1931,7 @@ NODEJS FOR BEGINNERS
 
 ====================================================================
 # X. Paging API using AJAX
-https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
+
 
 * Create data for MongoDB
 
@@ -2091,6 +2091,11 @@ https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
             └───home
                     index.html
 
+    * Note : 
+        * jquery.min.js - This file will download from (https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js)
+        * /public - This directory will contain all static file , example file js, css, image, audio,...
+        * /routes - This directory will contain all the routes that you have created using Express Router and associated with Controllers. Naming as well on xxxxx.routes.js
+        * /models - This directory will contain all the files like your schema and necessary schema functionality will also be located here. Name xxxxx.model.js
 
 
 * Write the following code into the files
