@@ -1931,7 +1931,7 @@ NODEJS FOR BEGINNERS
 
 ====================================================================
 # X. Paging API using AJAX
-
+* Ref (Lib pagingjs) : https://pagination.js.org/
 
 * Create data for MongoDB
 
@@ -2511,3 +2511,72 @@ NODEJS FOR BEGINNERS
                 * http://localhost:3000/public/css/home-style.css
                 * http://localhost:3000/public/js/home-script.js
             * Ref : https://expressjs.com/en/starter/static-files.html
+
+
+
+====================================================================
+# X. JWT
+* JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be transferred between two parties. The claims in a JWT are encoded as a JSON object that is used as the payload of a JSON Web Signature (JWS) structure or as the plaintext of a JSON Web Encryption (JWE) structure, enabling the claims to be digitally signed or integrity protected with a Message Authentication Code (MAC) and/or encrypted.
+* https://jwt.io/introduction
+* https://jwt.io/
+* Usage : https://github.com/auth0/node-jsonwebtoken#usage
+* Note :
+
+        token = header.payload.signnature
+
+        data + secert ----(sign)----> token
+
+        token + secert ----(verify)----> data
+
+
+* Install jsonwebtoken (https://www.npmjs.com/package/jsonwebtoken)
+
+        npm install jsonwebtoken
+
+    
+* Create file [testing.js] to testing:
+
+        var jwt = require('jsonwebtoken');
+
+        const token = jwt.sign({ username: 'dotraminhchu', password: '123456789' }, 'admin123456', {
+            expiresIn: 2 // expired after 2 second
+        });
+
+        console.log('token : ',token);
+
+        setTimeout(() => {
+        
+            jwt.verify(token, 'admin123456', (err, decoded) => {
+                if (decoded) {
+                    console.log("decoded : ", decoded)
+                } else {
+                    console.log('Token expired')
+                }
+            })
+        },1000)
+
+
+        setTimeout(() => {
+            jwt.verify(token, 'admin123456', (err, decoded) => {
+                if (decoded) {
+                    console.log("decoded : ", decoded)
+                } else {
+                    console.log('Token expired')
+                }
+            })
+        },2001)
+
+* Run code
+
+        node testing.js
+
+    or 
+
+        nodemon testing.js
+
+
+
+
+
+====================================================================
+# X. JWT

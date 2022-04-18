@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router()
 
-const AccountModel = require('../models/account.model')
+const AccountModel = require('../models/account.model') ; //list account cua DB
 
 // Get all 
 router.get('/', (req, res, next) => {
