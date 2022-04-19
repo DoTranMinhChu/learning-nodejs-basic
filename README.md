@@ -2818,4 +2818,79 @@ NODEJS FOR BEGINNERS
                 app.use("/login",routerLogin);
 
 
-    
+
+====================================================================
+# X. Using public key anh private key
+
+* Create new foder [key] and file [key>create-key.js]
+
+        │
+        ├───key
+        │       create-key.js
+
+
+* Write the following code into the file [key>create-key.js] to create public key and private key
+
+        const fs = require('fs')
+        const { generateKeyPairSync } = require('crypto');
+
+        const { privateKey, publicKey } = generateKeyPairSync('rsa', {
+            modulusLength: 2048,
+            publicKeyEncoding: {
+                type: 'spki',
+                format: 'pem',
+            },
+            privateKeyEncoding: {
+                type: 'pkcs8',
+                format: 'pem',
+                cipher: "aes-256-cbc",
+                passphrase: 'MinhChu'
+
+            }
+        })
+
+        fs.writeFileSync('key/public.pem', publicKey);
+        fs.writeFileSync('key/private.crt', privateKey);
+
+
+    * Run file [key>create-key.js]
+
+            node key/create-key.js
+
+    * After successfully running in folder [key] , there will be following new 2 files ([private.crt] and [public.pem]) :
+
+            ├───key
+            │       create-key.js
+            │       private.crt
+            │       public.pem
+
+* Write the following code into the file [test.js] to test using **private key** for sign but using **public key** for verify
+
+
+        const jwt = require('jsonwebtoken');
+        const fs = require('fs')
+
+
+        const privateKey = fs.readFileSync('private.crt');
+        const token = jwt.sign(
+            {
+                name: 'Do Tran Minh Chu',
+                old: '21'
+            },
+            {
+                key: privateKey,
+                passphrase: 'MinhChu'
+            },
+            {
+                algorithm: 'RS256'
+            }
+        );
+
+
+        const publicKey = fs.readFileSync('public.pem');
+        jwt.verify(token, publicKey, { algorithms: 'RS256' }, (err, decoded) => {
+            console.log(err ? err : decoded)
+
+        });
+
+
