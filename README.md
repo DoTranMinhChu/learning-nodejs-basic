@@ -2894,3 +2894,8 @@ NODEJS FOR BEGINNERS
         });
 
 
+    * Run file [key>test.js]
+
+            node test.js
+
+
