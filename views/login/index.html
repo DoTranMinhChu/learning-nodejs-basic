@@ -9,13 +9,17 @@
 </head>
 
 <body>
-    <form method="post">
-        <label>username : </label><input type="text" name="username">
+    <form id="login-form">
+        <label>username : </label><input type="text" id="username" name="username">
         </br>
-        <label>password : </label><input type="password" name="password">
+        <label>password : </label><input type="password" id="password" name="password">
         </br>
-        <button type="submit">Login</button>
+        <button type="button" onclick="login()">Login</button>
     </form>
+
+
+    <script src="/public/js/jquery.min.js"></script>
+    <script src="/public/js/login-script.js"></script>
 </body>
 
 </html>

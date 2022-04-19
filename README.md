@@ -2579,4 +2579,243 @@ NODEJS FOR BEGINNERS
 
 
 ====================================================================
-# X. JWT
+# X. Using JWT to login
+
+* Install cookie-parser to using Cookie (https://www.npmjs.com/package/cookie-parser)
+
+        npm install cookie-parser
+
+* Create new folders and files :
+
+        ├───public
+        │   ├───..
+        │   │       ...
+        │   │
+        │   └───js
+        │           ..
+        │           ..
+        │           login-script.js
+        │
+        ├───routers
+        │       ..
+        │       login.router.js
+        │       ..
+        │
+        └───views
+            ├───...
+            │       ...
+            │
+            └───login
+                    index.html
+
+
+* Write code into the files:
+    * File [views>login>index.html] display form login:
+
+            <!DOCTYPE html>
+            <html lang="en">
+
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Login</title>
+            </head>
+
+            <body>
+                <form id="login-form">
+                    <label>username : </label><input type="text" id="username" name="username">
+                    </br>
+                    <label>password : </label><input type="password" id="password" name="password">
+                    </br>
+                    <button type="button" onclick="login()">Login</button>
+                </form>
+
+
+                <script src="/public/js/jquery.min.js"></script>
+                <script src="/public/js/login-script.js"></script>
+            </body>
+
+            </html>
+
+    * File [public>js>login-script.js] define function login() in file login>index.html :
+
+            function setCookie(name, value, days) {
+                var expires = "";
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + (value || "") + expires + "; path=/";
+            }
+
+            function login() {
+                console.log()
+
+                $.ajax({
+                    url: '/login',
+                    type: 'POST',
+                    data: {
+                        username: $('#login-form #username').val(),
+                        password: $('#login-form #password').val()
+                    }
+                }).then(data => {
+                    if (data.token) {
+                        setCookie('token', data.token, 1) 
+                    } else {
+                        alert('The Username or Password is Incorrect')
+                    }
+
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
+
+    * File [routers>login.router.js] 
+
+            const express = require('express');
+            const path = require('path');
+            const router = express.Router();
+            const jwt = require('jsonwebtoken');
+
+            const AccountModel = require('../models/account.model');
+
+            router.get('/', (req, res, next) => {
+                const token = req.cookies.token;
+
+                jwt.verify(token, 'password-admin', (err, decode) => {
+                    if (!err) {
+                        AccountModel.findOne({ _id: decode._id })
+                            .then(data => {
+                                return res.json({ message: `welcome ${data.fullname}`, data })
+                            })
+                            .catch(err => {
+                                return res.status(500).json(err)
+                            })
+                    } else {
+                        return res.sendFile(path.join(__dirname, '../views/login/index.html'));
+                    }
+                })
+
+
+            })
+
+            router.post('/', (req, res, next) => {
+                const { username, password } = req.body;
+                AccountModel.findOne({
+                    username: username,
+                    password: password
+                })
+                    .then(data => {
+                        const token = jwt.sign({ _id: data._id }, 'password-admin', { expiresIn: 1 * 60 });
+                        if (data) {
+                            return res.json({ message: 'sucessfully login', token: token })
+                        } else {
+                            return res.json({ message: 'unsucessfully login', token: null })
+                        }
+
+                    })
+                    .catch(err => {
+                        return res.json({ message: 'unsucessfully login', err })
+                    })
+            })
+
+            module.exports = router;
+
+
+    * File [app.js]
+
+            const express = require('express');
+            const app = express();
+            const path = require('path');
+            const bodyParser = require('body-parser');
+            const cookieParser = require('cookie-parser')
+
+            const port = 3000;
+            const routerAccount = require('./routers/account.router');
+            const routerProduct = require('./routers/product.router');
+            const routerLogin = require('./routers/login.router');``
+
+
+            app.use(bodyParser.urlencoded({ extended: false }));
+            app.use(bodyParser.json());
+            app.use(cookieParser())
+
+            app.use('/public', express.static(path.join(__dirname, 'public')));
+
+            app.use("/api/account", routerAccount);
+            app.use("/api/product", routerProduct);
+            app.use("/login",routerLogin);
+
+            app.get("/home", (req, res) => {
+                res.sendFile(path.join(__dirname, 'views/home/index.html'))
+            });
+
+
+
+            app.listen(port, () => {
+                console.log(`Example app http://localhost:${port}/home`);
+                console.log(`Example app http://localhost:${port}/login`);
+
+            });
+
+* Explain code: 
+    * File [routers>login.router.js] :
+        * 
+                router.get('/', (req, res, next) => {
+                    const token = req.cookies.token;
+
+                    jwt.verify(token, 'password-admin', (err, decode) => {
+                        ....
+                    })
+
+                })
+
+
+                router.post('/', (req, res, next) => {
+                    const { username, password } = req.body;
+                    AccountModel.findOne({
+                        username: username,
+                        password: password
+                    })
+                        .then(data => {
+                            const token = jwt.sign({ _id: data._id }, 'password-admin', { expiresIn: 1 * 60 });
+                            ...
+
+                        })
+                        .catch(err => {
+                            return res.json({ message: 'unsucessfully login', err })
+                        })
+                })
+
+
+            * Get token saved in Cookies
+
+                    const token = req.cookies.token;
+
+            * Create token form object{_id: data._id} and  secretOrPublicKey = 'password-admin' and this token will expres after 60 second
+
+                    const token = jwt.sign({ _id: data._id }, 'password-admin', { expiresIn: 1 * 60 });
+
+            * Decode token saved in Cookie with secretOrPublicKey = 'password-admin' (https://www.npmjs.com/package/jsonwebtoken#jwtverifytoken-secretorpublickey-options-callback)
+
+                    jwt.verify(token, 'password-admin', (err, decode) => { }
+        
+    * File [app.js] :
+
+                ...
+                const cookieParser = require('cookie-parser')  // Import cookie-parser
+                ..
+                ...
+                const routerLogin = require('./routers/login.router');
+                ..
+                ..
+                ...
+                app.use(cookieParser())  //  Adding middleware cookieParser to **app**
+
+                ...
+                app.use("/login",routerLogin);
+
+
+    
