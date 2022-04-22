@@ -2899,3 +2899,9 @@ NODEJS FOR BEGINNERS
             node test.js
 
 
+
+
+====================================================================
+# XI.
+
+https://stackoverflow.com/questions/27637609/understanding-passport-serialize-deserialize

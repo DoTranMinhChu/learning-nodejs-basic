@@ -13,7 +13,7 @@ function pagingListProduct(page, length) {
 function changePage(page) {
     $.ajax({
         url: `/api/product?page=${page}`,
-        type: 'GET',
+        type: 'GET',// get post put delete 
         dataType: 'json'
     })
         .then(data => {

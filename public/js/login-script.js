@@ -20,7 +20,8 @@ function login() {
         }
     }).then(data => {
         if (data.token) {
-            setCookie('token', data.token, 1) 
+            setCookie('authorization', 'Bearer ' + data.token, 1)
+            window.location.href = 'personal'
         } else {
             alert('The Username or Password is Incorrect')
         }

@@ -46,5 +46,8 @@ router.get('/', async (req, res, next) => {
 
 })
 
-
+router.get('/check', (req, res, next) => {
+    console.log("check")
+    res.render('./views/login/index')
+})
 module.exports = router

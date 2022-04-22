@@ -2,47 +2,64 @@ const express = require('express');
 const path = require('path');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const fs = require('fs')
+var passport = require('passport');
+
+var LocalStrategy = require('passport-local').Strategy;
 
 const AccountModel = require('../models/account.model');
 
+
+passport.use(new LocalStrategy((username, password, done) => {
+    AccountModel.findOne({ username: username, password: password }, (err, user) => {
+        if (err) { return done(err); }
+        if (!user) { return done(null, false); }
+        return done(null, user);
+    });
+}
+));
+
+passport.serializeUser(function (user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function (user, done) {
+    done(null, user.toObject());
+});
+
 router.get('/', (req, res, next) => {
-    const token = req.cookies.token;
-
-    jwt.verify(token, 'password-admin', (err, decode) => {
-        if (!err) {
-            AccountModel.findOne({ _id: decode._id })
-                .then(data => {
-                    return res.json({ message: `welcome ${data.fullname}`, data })
-                })
-                .catch(err => {
-                    return res.status(500).json(err)
-                })
-        } else {
-            return res.sendFile(path.join(__dirname, '../views/login/index.html'));
-        }
-    })
-
-
+    res.sendFile(path.join(__dirname, '../views/login/index.html'));
 })
+
+
 
 router.post('/', (req, res, next) => {
-    const { username, password } = req.body;
-    AccountModel.findOne({
-        username: username,
-        password: password
-    })
-        .then(data => {
-            const token = jwt.sign({ _id: data._id }, 'password-admin', { expiresIn: 1 * 60 });
-            if (data) {
-                return res.json({ message: 'sucessfully login', token: token })
-            } else {
-                return res.json({ message: 'unsucessfully login', token: null })
-            }
 
+    passport.authenticate('local', (err, user, info) => {
+
+        if (err) { return next(err); }
+        if (!user) { return res.redirect('/login'); }
+
+        const userID = { _id: user.toObject()._id };
+        req.logIn(userID, (err) => {  // call passport.serializeUser
+            if (err) { return next(err); }
+            const privateKey = fs.readFileSync('./key/private.crt');
+            const token = jwt.sign(
+                userID,
+                {
+                    key: privateKey,
+                    passphrase: 'MinhChu'
+                },
+                {
+                    algorithm: 'RS256'
+                }
+            );
+
+            return res.json({ token })
         })
-        .catch(err => {
-            return res.json({ message: 'unsucessfully login', err })
-        })
-})
+    })(req, res, next);
+
+});
+
 
 module.exports = router;
