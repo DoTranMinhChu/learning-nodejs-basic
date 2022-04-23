@@ -23,9 +23,6 @@ passport.serializeUser(function (user, done) {
     done(null, user);
 });
 
-passport.deserializeUser(function (user, done) {
-    done(null, user.toObject());
-});
 
 router.get('/', (req, res, next) => {
     res.sendFile(path.join(__dirname, '../views/login/index.html'));
@@ -41,7 +38,10 @@ router.post('/', (req, res, next) => {
         if (!user) { return res.redirect('/login'); }
 
         const userID = { _id: user.toObject()._id };
+
         req.logIn(userID, (err) => {  // call passport.serializeUser
+            console.log("serializeUser : ", req.session.passport.user)
+
             if (err) { return next(err); }
             const privateKey = fs.readFileSync('./key/private.crt');
             const token = jwt.sign(

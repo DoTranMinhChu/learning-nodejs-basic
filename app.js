@@ -32,5 +32,4 @@ app.get("/home", (req, res) => {
 app.listen(port, () => {
     console.log(`Example app http://localhost:${port}/home`);
     console.log(`Example app http://localhost:${port}/login`);
-
 });

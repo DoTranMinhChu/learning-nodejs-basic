@@ -2902,6 +2902,216 @@ NODEJS FOR BEGINNERS
 
 
 ====================================================================
-# XI.
+# XI. Login using passport-local
+* Passport ref : https://www.passportjs.org/
+* Passport-local ref : https://www.passportjs.org/packages/passport-local/
+* Install passport (https://www.npmjs.com/package/passport#install)
+
+        npm install passport
+
+* Install passport-local (https://www.passportjs.org/packages/passport-local/)
+
+        npm install passport-local
+
+* Usage ref : https://github.com/jaredhanson/passport#usage
 
 https://stackoverflow.com/questions/27637609/understanding-passport-serialize-deserialize
+
+* Write code into the files:
+    * File [app.js] :
+
+            const express = require('express');
+            const app = express();
+            const path = require('path');
+            const bodyParser = require('body-parser');
+            const cookieParser = require('cookie-parser');
+
+
+            const port = 3000;
+            const routerAccount = require('./routers/account.router');
+            const routerProduct = require('./routers/product.router');
+            const routerLogin = require('./routers/login.router');
+            const routerPersonal = require('./routers/personal.router')
+
+            app.use(bodyParser.urlencoded({ extended: true }));
+            app.use(bodyParser.json());
+            app.use(cookieParser());
+
+
+            app.use('/public', express.static(path.join(__dirname, 'public')));
+
+            app.use("/api/account", routerAccount);
+            app.use("/api/product", routerProduct);
+            app.use("/login", routerLogin);
+            app.use("/personal", routerPersonal);
+
+
+            app.get("/home", (req, res) => {
+                res.sendFile(path.join(__dirname, 'views/home/index.html'))
+            });
+
+
+            app.listen(port, () => {
+                console.log(`Example app http://localhost:${port}/home`);
+                console.log(`Example app http://localhost:${port}/login`);
+            });
+
+    * File [routers>login.router.js]:
+
+            const express = require('express');
+            const path = require('path');
+            const router = express.Router();
+            const jwt = require('jsonwebtoken');
+            const fs = require('fs')
+            var passport = require('passport');
+
+            var LocalStrategy = require('passport-local').Strategy;
+
+            const AccountModel = require('../models/account.model');
+
+
+            passport.use(new LocalStrategy((username, password, done) => {
+                AccountModel.findOne({ username: username, password: password }, (err, user) => {
+                    if (err) { return done(err); }
+                    if (!user) { return done(null, false); }
+                    return done(null, user);
+                });
+            }
+            ));
+
+            passport.serializeUser(function (user, done) {
+                done(null, user);
+            });
+
+
+            router.get('/', (req, res, next) => {
+                res.sendFile(path.join(__dirname, '../views/login/index.html'));
+            })
+
+
+
+            router.post('/', (req, res, next) => {
+
+                passport.authenticate('local', (err, user, info) => {
+
+                    if (err) { return next(err); }
+                    if (!user) { return res.redirect('/login'); }
+
+                    const userID = { _id: user.toObject()._id };
+
+                    req.logIn(userID, (err) => {  // call passport.serializeUser
+                        console.log("serializeUser : ", req.session.passport.user)
+
+                        if (err) { return next(err); }
+                        const privateKey = fs.readFileSync('./key/private.crt');
+                        const token = jwt.sign(
+                            userID,
+                            {
+                                key: privateKey,
+                                passphrase: 'MinhChu'
+                            },
+                            {
+                                algorithm: 'RS256'
+                            }
+                        );
+
+                        return res.json({ token })
+                    })
+                })(req, res, next);
+
+            });
+
+
+            module.exports = router;
+
+    * File [routers>personal.router.js]
+
+            const express = require('express');
+            const router = express.Router();
+            const jwt = require('jsonwebtoken');
+            const fs = require('fs')
+
+            const AccountModel = require('../models/account.model');
+
+            router.get("/", (req, res) => {
+                const token = req.cookies['authorization'].split(' ')[1];
+                const publicKey = fs.readFileSync('./key/public.pem');
+                jwt.verify(token, publicKey, { algorithms: 'RS256' }, (err, decoded) => {
+                    const user = AccountModel.findOne({ _id: decoded }, (err, user) => {
+                        if (user) return res.json(user)
+                    })
+                });
+            });
+
+
+            module.exports = router;
+
+    * File [views>login>index.html]
+
+            <!DOCTYPE html>
+            <html lang="en">
+
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Login</title>
+            </head>
+
+            <body>
+                <form id="login-form">
+                    <div>
+                        <label>Username:</label>
+                        <input type="text" name="username" id="username" />
+                    </div>
+                    <div>
+                        <label>Password:</label>
+                        <input type="password" name="password" id="password" />
+                    </div>
+                    <div>
+                        <button type="button" onclick="login()">Log In</button>
+                    </div>
+                </form>
+
+
+                <script src="/public/js/jquery.min.js"></script>
+                <script src="/public/js/login-script.js"></script>
+            </body>
+
+            </html>
+
+    * File [public>js>login-script.js]
+
+            function setCookie(name, value, days) {
+                var expires = "";
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + (value || "") + expires + "; path=/";
+            }
+
+            function login() {
+                console.log()
+
+                $.ajax({
+                    url: '/login',
+                    type: 'POST',
+                    data: {
+                        username: $('#login-form #username').val(),
+                        password: $('#login-form #password').val()
+                    }
+                }).then(data => {
+                    if (data.token) {
+                        setCookie('authorization', 'Bearer ' + data.token, 1)
+                        window.location.href = 'personal'
+                    } else {
+                        alert('The Username or Password is Incorrect')
+                    }
+
+                }).catch(err => {
+                    console.log(err)
+                })
+            }
+
