@@ -2913,6 +2913,10 @@ NODEJS FOR BEGINNERS
 
         npm install passport-local
 
+* Install express-session (https://www.npmjs.com/package/express-session)
+
+        npm i express-session
+
 * Usage ref : https://github.com/jaredhanson/passport#usage
 
 https://stackoverflow.com/questions/27637609/understanding-passport-serialize-deserialize
@@ -2925,6 +2929,8 @@ https://stackoverflow.com/questions/27637609/understanding-passport-serialize-de
             const path = require('path');
             const bodyParser = require('body-parser');
             const cookieParser = require('cookie-parser');
+            var passport = require('passport');
+            const session = require('express-session')
 
 
             const port = 3000;
@@ -2936,7 +2942,13 @@ https://stackoverflow.com/questions/27637609/understanding-passport-serialize-de
             app.use(bodyParser.urlencoded({ extended: true }));
             app.use(bodyParser.json());
             app.use(cookieParser());
-
+            app.use(session({
+                resave: false,
+                saveUninitialized: true,
+                secret: 'bla bla bla' 
+            }));
+            app.use(passport.initialize());
+            app.use(passport.session())
 
             app.use('/public', express.static(path.join(__dirname, 'public')));
 
@@ -2976,12 +2988,16 @@ https://stackoverflow.com/questions/27637609/understanding-passport-serialize-de
                     if (!user) { return done(null, false); }
                     return done(null, user);
                 });
-            }
-            ));
+            }));
 
-            passport.serializeUser(function (user, done) {
+            passport.serializeUser(function (user, done) { // save user object to req.user
                 done(null, user);
             });
+
+            passport.deserializeUser(function (user, done) {  // get req.user with value is user object
+                done(null, user);
+            });
+
 
 
             router.get('/', (req, res, next) => {
@@ -2997,25 +3013,13 @@ https://stackoverflow.com/questions/27637609/understanding-passport-serialize-de
                     if (err) { return next(err); }
                     if (!user) { return res.redirect('/login'); }
 
-                    const userID = { _id: user.toObject()._id };
+                    user = user.toObject();
 
-                    req.logIn(userID, (err) => {  // call passport.serializeUser
-                        console.log("serializeUser : ", req.session.passport.user)
-
-                        if (err) { return next(err); }
-                        const privateKey = fs.readFileSync('./key/private.crt');
-                        const token = jwt.sign(
-                            userID,
-                            {
-                                key: privateKey,
-                                passphrase: 'MinhChu'
-                            },
-                            {
-                                algorithm: 'RS256'
-                            }
-                        );
-
-                        return res.json({ token })
+                    req.logIn(user, (err) => {  // call passport.serializeUser
+                        if (err) {
+                            return next(err);
+                        }
+                        return res.json(user);
                     })
                 })(req, res, next);
 
@@ -3028,21 +3032,10 @@ https://stackoverflow.com/questions/27637609/understanding-passport-serialize-de
 
             const express = require('express');
             const router = express.Router();
-            const jwt = require('jsonwebtoken');
-            const fs = require('fs')
-
-            const AccountModel = require('../models/account.model');
 
             router.get("/", (req, res) => {
-                const token = req.cookies['authorization'].split(' ')[1];
-                const publicKey = fs.readFileSync('./key/public.pem');
-                jwt.verify(token, publicKey, { algorithms: 'RS256' }, (err, decoded) => {
-                    const user = AccountModel.findOne({ _id: decoded }, (err, user) => {
-                        if (user) return res.json(user)
-                    })
-                });
+                res.json(req.user)
             });
-
 
             module.exports = router;
 
@@ -3082,16 +3075,6 @@ https://stackoverflow.com/questions/27637609/understanding-passport-serialize-de
 
     * File [public>js>login-script.js]
 
-            function setCookie(name, value, days) {
-                var expires = "";
-                if (days) {
-                    var date = new Date();
-                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                    expires = "; expires=" + date.toUTCString();
-                }
-                document.cookie = name + "=" + (value || "") + expires + "; path=/";
-            }
-
             function login() {
                 console.log()
 
@@ -3103,8 +3086,7 @@ https://stackoverflow.com/questions/27637609/understanding-passport-serialize-de
                         password: $('#login-form #password').val()
                     }
                 }).then(data => {
-                    if (data.token) {
-                        setCookie('authorization', 'Bearer ' + data.token, 1)
+                    if (data._id) {
                         window.location.href = 'personal'
                     } else {
                         alert('The Username or Password is Incorrect')
@@ -3114,4 +3096,3 @@ https://stackoverflow.com/questions/27637609/understanding-passport-serialize-de
                     console.log(err)
                 })
             }
-

@@ -16,12 +16,16 @@ passport.use(new LocalStrategy((username, password, done) => {
         if (!user) { return done(null, false); }
         return done(null, user);
     });
-}
-));
+}));
 
-passport.serializeUser(function (user, done) {
+passport.serializeUser(function (user, done) { // save user object to req.user
     done(null, user);
 });
+
+passport.deserializeUser(function (user, done) {  // get req.user with value is user object
+    done(null, user);
+});
+
 
 
 router.get('/', (req, res, next) => {
@@ -37,25 +41,13 @@ router.post('/', (req, res, next) => {
         if (err) { return next(err); }
         if (!user) { return res.redirect('/login'); }
 
-        const userID = { _id: user.toObject()._id };
+        user = user.toObject();
 
-        req.logIn(userID, (err) => {  // call passport.serializeUser
-            console.log("serializeUser : ", req.session.passport.user)
-
-            if (err) { return next(err); }
-            const privateKey = fs.readFileSync('./key/private.crt');
-            const token = jwt.sign(
-                userID,
-                {
-                    key: privateKey,
-                    passphrase: 'MinhChu'
-                },
-                {
-                    algorithm: 'RS256'
-                }
-            );
-
-            return res.json({ token })
+        req.logIn(user, (err) => {  // call passport.serializeUser
+            if (err) {
+                return next(err);
+            }
+            return res.json(user);
         })
     })(req, res, next);
 

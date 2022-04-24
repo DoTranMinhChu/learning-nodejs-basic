@@ -3,6 +3,8 @@ const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+var passport = require('passport');
+const session = require('express-session')
 
 
 const port = 3000;
@@ -14,7 +16,13 @@ const routerPersonal = require('./routers/personal.router')
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-
+app.use(session({
+    resave: false,
+    saveUninitialized: true,
+    secret: 'bla bla bla' 
+  }));
+app.use(passport.initialize());
+app.use(passport.session())
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
