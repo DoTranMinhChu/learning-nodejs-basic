@@ -7,11 +7,12 @@ var passport = require('passport');
 const session = require('express-session')
 
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 const routerAccount = require('./routers/account.router');
 const routerProduct = require('./routers/product.router');
 const routerLogin = require('./routers/login.router');
 const routerPersonal = require('./routers/personal.router')
+const routerPostgresql = require('./routers/postgresql.router')
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -30,7 +31,7 @@ app.use("/api/account", routerAccount);
 app.use("/api/product", routerProduct);
 app.use("/login", routerLogin);
 app.use("/personal", routerPersonal);
-
+app.use("/postgresql", routerPostgresql);
 
 app.get("/home", (req, res) => {
     res.sendFile(path.join(__dirname, 'views/home/index.html'))
@@ -40,4 +41,6 @@ app.get("/home", (req, res) => {
 app.listen(port, () => {
     console.log(`Example app http://localhost:${port}/home`);
     console.log(`Example app http://localhost:${port}/login`);
+    console.log(`Example app http://localhost:${port}/postgresql/select`);
+    console.log(`Example app http://localhost:${port}/postgresql/insert`);
 });

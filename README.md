@@ -3096,3 +3096,17 @@ https://stackoverflow.com/questions/27637609/understanding-passport-serialize-de
                     console.log(err)
                 })
             }
+
+
+
+* Suggest 
+    * passport-facebook (https://www.passportjs.org/packages/passport-facebook/)
+    * passport-mail (https://www.passportjs.org/packages/passport-mail/)
+
+
+
+====================================================================
+# XII. Postgresql with nodejs
+* Dowload postgresql : https://www.postgresql.org/download/
+* Create table and column like that: 
+<img src="./img/postgresql-example.png" width="128"/>
