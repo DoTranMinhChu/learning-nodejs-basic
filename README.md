@@ -3107,6 +3107,7 @@ https://stackoverflow.com/questions/27637609/understanding-passport-serialize-de
 
 ====================================================================
 # XII. Postgresql with nodejs
+* Leaning postgresql : https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-select/
 * Dowload postgresql : https://www.postgresql.org/download/
 * Create table and column like that: 
 <img src="./img/postgresql-example.png" width="100%"/>
