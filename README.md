@@ -3110,3 +3110,94 @@ https://stackoverflow.com/questions/27637609/understanding-passport-serialize-de
 * Dowload postgresql : https://www.postgresql.org/download/
 * Create table and column like that: 
 <img src="./img/postgresql-example.png" width="100%"/>
+
+* Install pg (https://node-postgres.com/)
+
+    npm install pg
+
+
+* Create file [routers>postgresql.router.js]
+
+* Write code into the file [routers>postgresql.router.js]
+
+        const express = require('express');
+        const router = express.Router();
+        const { Client } = require('pg')
+
+        const client = new Client({
+            user: 'postgres',
+            host: 'localhost',
+            database: 'testdb',
+            password: '123456',
+            port: 5432,
+        })
+        client.connect(function (err) {
+            if (err) throw err;
+            console.log("Connected postgress!");
+        });
+
+        router.get('/insert', (req, res) => {
+            const text = "INSERT INTO accounts (username, password)VALUES ($1, $2)";
+            const values = ['user001', '1234567'];
+            client.query(text, values);
+            res.end();
+        })
+
+
+        router.get('/select', (req, res) => {
+            client.query('SELECT * FROM public.accounts')
+                .then(data => { res.json(data.rows) })
+
+        })
+        module.exports = router;
+
+
+* Write code into the file [app.js]
+
+
+        const express = require('express');
+        const app = express();
+        const path = require('path');
+        const bodyParser = require('body-parser');
+        const cookieParser = require('cookie-parser');
+        var passport = require('passport');
+        const session = require('express-session')
+
+
+        const port = process.env.PORT || 3000;
+        const routerAccount = require('./routers/account.router');
+        const routerProduct = require('./routers/product.router');
+        const routerLogin = require('./routers/login.router');
+        const routerPersonal = require('./routers/personal.router')
+        const routerPostgresql = require('./routers/postgresql.router')
+
+        app.use(bodyParser.urlencoded({ extended: true }));
+        app.use(bodyParser.json());
+        app.use(cookieParser());
+        app.use(session({
+            resave: false,
+            saveUninitialized: true,
+            secret: 'bla bla bla' 
+        }));
+        app.use(passport.initialize());
+        app.use(passport.session())
+
+        app.use('/public', express.static(path.join(__dirname, 'public')));
+
+        app.use("/api/account", routerAccount);
+        app.use("/api/product", routerProduct);
+        app.use("/login", routerLogin);
+        app.use("/personal", routerPersonal);
+        app.use("/postgresql", routerPostgresql);
+
+        app.get("/home", (req, res) => {
+            res.sendFile(path.join(__dirname, 'views/home/index.html'))
+        });
+
+
+        app.listen(port, () => {
+            console.log(`Example app http://localhost:${port}/home`);
+            console.log(`Example app http://localhost:${port}/login`);
+            console.log(`Example app http://localhost:${port}/postgresql/select`);
+            console.log(`Example app http://localhost:${port}/postgresql/insert`);
+        });
